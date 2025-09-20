@@ -65,9 +65,8 @@ For users who prefer manual control:
 <img width="930" height="102" alt="image" src="https://github.com/user-attachments/assets/cdd0fc44-e796-4891-a722-1f5f1932e25d" />
 
 ### Awesome CVar Addon
-Play around with values. Some are disabled and won't change anything.
 <img width="328" height="251" alt="image" src="https://github.com/user-attachments/assets/f1c3b8a9-10ec-46de-8cd9-5a184577c8af" />
-
+<img width="1205" height="906" alt="image" src="https://github.com/user-attachments/assets/f74a2725-6341-4650-88f3-952012660264" />
 
 ### Enabling Castbars
 To enable castbars over all enemy nameplates:
