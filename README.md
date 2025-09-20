@@ -15,9 +15,9 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft: Ascension
 ## Prerequisites
 - **World of Warcraft: Ascension** installed, with `Ascension.exe` accessible.
 - **Addons** (required for full functionality):
-  - **AwesomeCVar**: Enables custom CVar settings for modern features.
-  - **Flash**: Supports additional visual enhancements.
-  - **WeakAuras**: [Github Link](https://github.com/NoM0Re/WeakAuras-WotLK)
+  - **AwesomeCVar**: Enables custom CVar settings for modern features. (download below)
+  - **Flash**: Supports additional visual enhancements.(download below)
+  - **WeakAuras**: WeakAuras is a powerful and flexible framework that allows the display of highly customizable graphics on World of Warcraft's user interface to indicate buffs, debuffs, and other relevant information. NoM0Re version. (download below)
   - Download and install these addons in your Ascension `Interface\AddOns` folder.
 - **WeakAuras Addon**: Required for nameplate castbars and reactive spell anchoring.
   - Import the WeakAura for castbars: [https://wago.io/Xm56P0I81](https://wago.io/Xm56P0I81).
@@ -29,9 +29,9 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft: Ascension
    - Extract the AwesomeEpoch folder to a location of your choice (e.g., `C:\Users\YourName\AwesomeEpoch`).
 
 2. **Install Required Addons**:
-   - Download **AwesomeCVar** and **Flash** addons from here
-   - Place the addon folders in your Ascension `Interface\AddOns` directory (e.g., `C:\Program Files\Ascension Launcher\resources\epoch_live\Interface\AddOns`).
-   - Install the **WeakAuras** addon and import the castbar WeakAura:
+   - Download **AwesomeCVar** and **Flash** addons from [awesome_wotlk Github](https://github.com/someweirdhuman/awesome_wotlk/releases/download/v30/addons_v30.zip)
+   - Place the addons in your Ascension `Interface\AddOns` directory (e.g., `C:\Program Files\Ascension Launcher\resources\epoch_live\Interface\AddOns`).
+   - Install [WeakAuras](https://github.com/NoM0Re/WeakAuras-WotLK) addon and import the castbar WeakAura:
      - Visit [https://wago.io/Xm56P0I81](https://wago.io/Xm56P0I81).
      - Copy the import string and paste it into WeakAuras in-game (`/wa` to open).
 
