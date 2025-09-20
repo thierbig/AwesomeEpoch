@@ -36,7 +36,7 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft: Ascension
      - Copy the import string and paste it into WeakAuras in-game (`/wa` to open).
 
 3. **Optional: Set Custom Game Path**:
-   - Create or edit `gameExeLocation.txt` in the extracted folder.
+   - Edit `gameExeLocation.txt` in the extracted folder,remove the `#' and set a new path.
    - Add the path to your `Ascension.exe` or its folder (e.g., `E:\Games\epoch_live_bon` or `E:\Games\epoch_live_bon\Ascension.exe`).
    - Leave the file empty or delete it to use default paths (e.g., Program Files, C:\Games, D:\Games).
 
