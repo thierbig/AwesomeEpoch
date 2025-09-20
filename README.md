@@ -28,7 +28,7 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft: Ascension
    - Extract the AwesomeEpoch folder to a location of your choice (e.g., `C:\Users\YourName\AwesomeEpoch`).
 
 2. **Install Required Addons**:
-   - Download **AwesomeCVar** and **Flash** addons from [awesome_wotlk Github](https://github.com/someweirdhuman/awesome_wotlk/releases/download/v30/addons_v30.zip)
+   - Download **AwesomeCVar** and **Flash** addons made for [awesome_wotlk](https://github.com/someweirdhuman/awesome_wotlk/releases/download/v30/addons_v30.zip)
    - Place the addons in your Ascension `Interface\AddOns` directory (e.g., `C:\Program Files\Ascension Launcher\resources\epoch_live\Interface\AddOns`).
    - Install [WeakAuras](https://github.com/NoM0Re/WeakAuras-WotLK) addon and import the castbar WeakAura:
      - Visit [https://wago.io/Xm56P0I81](https://wago.io/Xm56P0I81).
