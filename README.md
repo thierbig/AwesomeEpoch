@@ -97,5 +97,9 @@ To enable castbars over all enemy nameplates:
 ## Credits
 AwesomeEpoch is built upon the **awesome_wotlk** project by **[someweirdhuman](https://github.com/someweirdhuman)** and **[FrostAtom](https://github.com/FrostAtom)**. Their work on the [awesome_wotlk](https://github.com/someweirdhuman/awesome_wotlk) patcher enables the modern CVar features that make this tool possible. Thank you for their contributions to the WoW community!
 
+## Other Mods I recommend
+- [AddonList](https://github.com/thierbig/AddonList-3.3.5-Fixed)
+- [EpochAuthenticHD](https://github.com/thierbig/EpochAuthenticHD)
+
 ## License
 This project is licensed under the MIT License.
