@@ -102,7 +102,7 @@ AwesomeEpoch is built upon the **awesome_wotlk** project by **[someweirdhuman](h
 - [EpochAuthenticHD](https://github.com/thierbig/EpochAuthenticHD)
 
 ## Weakauras
-- Feel free to use my custom Epoch Weakauras: [https://wago.io/p/thierbig](https://wago.io/p/thierbig)
+- Feel free to use my other custom Epoch Weakauras: [https://wago.io/p/thierbig](https://wago.io/p/thierbig)
 
 ## License
 This project is licensed under the MIT License.
