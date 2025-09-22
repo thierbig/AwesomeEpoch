@@ -23,7 +23,6 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft: Ascension
   - **WeakAuras**: WeakAuras is a powerful and flexible framework that allows the display of highly customizable graphics on World of Warcraft's user interface to indicate buffs, debuffs, and other relevant information. NoM0Re version. (download below)
   - Download and install these addons in your Ascension `Interface\AddOns` folder.
 - **WeakAuras Addon**: Required for nameplate castbars and reactive spell anchoring.
-  - Import the WeakAura for castbars: [https://wago.io/Xm56P0I81](https://wago.io/Xm56P0I81).
 
 ## Installation
 1. **Download the Latest Release**:
