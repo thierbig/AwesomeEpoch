@@ -96,7 +96,7 @@ To enable castbars over all enemy nameplates:
 - **Support**: For issues or feature requests, create an issue on the [GitHub Issues](https://github.com/YourUsername/AwesomeEpoch/issues) page.
 
 ## Credits
-AwesomeEpoch is built upon the **awesome_wotlk** project by **[someweirdhuman](https://github.com/someweirdhuman)** and **[FrostAtom](https://github.com/FrostAtom)**. Their work on the [awesome_wotlk](https://github.com/someweirdhuman/awesome_wotlk) patcher enables the modern CVar features that make this tool possible. Thank you for their contributions to the WoW community!
+AwesomeEpoch is built upon the **awesome_wotlk** project by **[someweirdhuman](https://github.com/someweirdhuman)**, [NoM0Re](https://github.com/NoM0Re)**  **[FrostAtom](https://github.com/FrostAtom)**. Their work on the [awesome_wotlk](https://github.com/someweirdhuman/awesome_wotlk) patcher enables the modern CVar features that make this tool possible. Thank you for their contributions to the WoW community!
 
 ## Other Mods I maintain
 - [AddonList](https://github.com/thierbig/AddonList-3.3.5-Fixed)
