@@ -1,7 +1,8 @@
 # AwesomeEpoch
 <img width="999" height="698" alt="image" src="https://github.com/user-attachments/assets/a647942a-7773-45b8-bfc3-fa80ec2063c2" />
+**WARNING: USING THIS TOOL MIGHT RESULT IN A BAN**
 
-AwesomeEpoch is a utility designed to enhance the **World of Warcraft: Ascension** experience by launching `Ascension.exe` with the **AwesomeWotlkInjector**, enabling modern client features through custom CVar settings. This tool brings quality-of-life (QoL) improvements, such as the modern **Interaction Button** and the **Nameplates API**, allowing seamless integration with the **WeakAuras** addon for features like reactive spell anchoring (e.g., Overpower) and enemy castbars over nameplates. Users can customize the game executable path and perform manual injections if preferred.
+AwesomeEpoch is a utility designed to enhance the **World of Warcraft: Ascension** experience by launching `Ascension.exe` with the **AwesomeWotlkInjector**, enabling modern client features through custom CVar settings. This tool brings quality-of-life (QoL) improvements, such as the modern **Interaction Button** and the **Nameplates API**, allowing seamless integration with the **WeakAuras** addon for features like reactive spell anchoring (e.g., Overpower) and enemy castbars over nameplates. Users can customize the game executable path and perform manual injections if preferred. The injection method is safer from bans than the patched client method from vanilla awesome_wotlk.
 
 ## Features
 - **Modern Interaction Button**: Adds a modern client-style interaction button for smoother gameplay, similar to modern WoW.
