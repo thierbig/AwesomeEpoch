@@ -26,7 +26,7 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
 
 ## Installation
 1. **Download the Latest Release**:
-   - Download AwesomeEpoch from [latest release](https://github.com/thierbig/AwesomeEpoch/releases/download/1.0/AwesomeEpoch.zip)
+   - Download AwesomeEpoch.zip from [one of the release](https://github.com/thierbig/AwesomeEpoch/releases)
    - Extract the AwesomeEpoch folder to a location of your choice (e.g., `C:\Users\YourName\AwesomeEpoch`).
 
 2. **Install Required Addons**:
