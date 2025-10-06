@@ -98,6 +98,7 @@ AwesomeEpoch is built upon the **awesome_wotlk** project by **[someweirdhuman](h
 - [AddonList-Fixed](https://github.com/thierbig/AddonList-3.3.5-Fixed)
 - [Auctionator-Fixed](https://github.com/thierbig/Auctionator-3.3.5-Fixed)
 - [LossOfControlSmart](https://github.com/thierbig/LossOfControlSmart-3.3.5)
+- [TrinketMenu](https://github.com/thierbig/TrinketMenu-3.3.5)
 
 ## Weakauras
 - Feel free to use my other custom Epoch Weakauras: [https://wago.io/p/thierbig](https://wago.io/p/thierbig)
