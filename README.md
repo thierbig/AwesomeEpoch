@@ -20,9 +20,9 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
 - **Addons** (required for full functionality):
   - **AwesomeCVar**: Enables custom CVar settings for modern features. (download below)
   - **Flash**: Supports additional visual enhancements.(download below)
+  - **PlateCastBarFixed**: Castbars on all nameplates
   - **WeakAuras**: WeakAuras is a powerful and flexible framework that allows the display of highly customizable graphics on World of Warcraft's user interface to indicate buffs, debuffs, and other relevant information. NoM0Re version. (download below)
   - Download and install these addons in your Ascension `Interface\AddOns` folder.
-- **WeakAuras Addon**: Required for nameplate castbars and reactive spell anchoring.
 
 ## Installation
 1. **Download the Latest Release**:
@@ -30,12 +30,11 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
    - Extract the AwesomeEpoch folder to a location of your choice (e.g., `C:\Users\YourName\AwesomeEpoch`).
 
 2. **Install Required Addons**:
-   - Download **AwesomeCVar** and **Flash** addons made for [awesome_wotlk](https://github.com/someweirdhuman/awesome_wotlk/releases/download/v30/addons_v30.zip)
+   - Download **AwesomeCVar** and **Flash** [addons](https://github.com/someweirdhuman/awesome_wotlk/releases/download/v30/addons_v30.zip)
+   - Download [PlateCastBarFixed](https://github.com/thierbig/PlateCastBar-3.3.5-Fixed/archive/refs/heads/main.zip)
+   - (Optional) Download [WeakAuras](https://github.com/NoM0Re/WeakAuras-WotLK/archive/refs/heads/master.zip)
    - Place the addons in your Ascension `Interface\AddOns` directory (e.g., `C:\Program Files\Ascension Launcher\resources\epoch_live\Interface\AddOns`).
-   - Install [WeakAuras](https://github.com/NoM0Re/WeakAuras-WotLK) addon and import the castbar WeakAura:
-     - Visit [https://wago.io/Xm56P0I81](https://wago.io/Xm56P0I81).
-     - Copy the import string and paste it into WeakAuras in-game (`/wa` to open).
-
+   - 
 3. **Optional: Set Custom Game Path**:
    - Edit `gameExeLocation.txt` in the extracted folder,remove the `#' and set a new path.
    - Add the path to your `Ascension.exe` or its folder (e.g., `E:\Games\epoch_live_bon` or `E:\Games\epoch_live_bon\Ascension.exe`).
@@ -71,10 +70,7 @@ For users who prefer manual control:
 <img width="1205" height="906" alt="image" src="https://github.com/user-attachments/assets/f74a2725-6341-4650-88f3-952012660264" />
 
 ### Enabling Castbars
-To enable castbars over all enemy nameplates:
-1. In-game, open WeakAuras (`/wa`).
-2. Import the WeakAura from: [https://wago.io/Xm56P0I81](https://wago.io/Xm56P0I81).
-3. Ensure the **AwesomeCVar** and **WeakAuras** addons are enabled.
+To enable castbars over all enemy nameplates, you need to enable [PlateCastBarFixed](https://github.com/thierbig/PlateCastBar-3.3.5-Fixed/archive/refs/heads/main.zip)
 
 ## Troubleshooting
 - **AwesomeEpoch.exe not working**:
@@ -85,23 +81,23 @@ To enable castbars over all enemy nameplates:
   - Verify `Ascension.exe` is running before manual injection.
   - Check if `AwesomeWotlkInjector.exe` is in the release folder or the `AwesomeWotlkInjector` subfolder.
   - Ensure you have the required addons (`AwesomeCVar`, `Flash`, `WeakAuras`).
-- **Castbars or WeakAuras not working**:
-  - Confirm the WeakAura is imported correctly and addons are enabled.
-  - Reload the UI (`/reload`) or restart the game.
+  
 
 ## Notes
 - **Nameplate Distance Limitation**: Changing nameplate distance is disabled as it’s considered cheating.
 - **Run as Administrator**: Always run `AwesomeEpoch.exe`  or manual injection commands with administrator privileges to avoid permission issues.
 - **Logs**: Check logs files `AutoInject_Awesome.log` and `injector_output.log` to diagnose issues.
-- **Support**: For issues or feature requests, create an issue on the [GitHub Issues](https://github.com/YourUsername/AwesomeEpoch/issues) page.
+- **Support**: For issues or feature requests, create an issue on the [GitHub Issues](https://github.com/thierbig/AwesomeEpoch/issues) page.
 
 ## Credits
 AwesomeEpoch is built upon the **awesome_wotlk** project by **[someweirdhuman](https://github.com/someweirdhuman)**, [NoM0Re](https://github.com/NoM0Re)** and **[FrostAtom](https://github.com/FrostAtom)**. Their work on the [awesome_wotlk](https://github.com/someweirdhuman/awesome_wotlk) patcher enables the modern CVar features that make this tool possible. Thank you for their contributions to the WoW community!
 
 ## Other Mods I maintain
+- [PlateCastBarFixed](https://github.com/thierbig/PlateCastBar-3.3.5-Fixed)
 - [EpochAuthenticHD](https://github.com/thierbig/EpochAuthenticHD)
 - [AddonList-Fixed](https://github.com/thierbig/AddonList-3.3.5-Fixed)
 - [Auctionator-Fixed](https://github.com/thierbig/Auctionator-3.3.5-Fixed)
+- [LossOfControlSmart](https://github.com/thierbig/LossOfControlSmart-3.3.5)
 
 ## Weakauras
 - Feel free to use my other custom Epoch Weakauras: [https://wago.io/p/thierbig](https://wago.io/p/thierbig)
