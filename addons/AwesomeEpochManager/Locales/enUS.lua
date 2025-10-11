@@ -1,18 +1,17 @@
 -- File: enUS.lua
 -- Language: English (US)
-local addonName, AwesomeCVar = ...
+local addonName, ACVar = ...
 
-if not AwesomeCVar.L then
-    AwesomeCVar.L = {}
+if not ACVar.L then
+    ACVar.L = {}
 end
-
-local L = AwesomeCVar.L
+local L = ACVar.L
 
 if GetLocale() == "enUS" then
     -- General
-    L.ADDON_NAME = "AwesomeCVar"
-    L.ADDON_NAME_SHORT = "Awesome CVar"
-    L.MAIN_FRAME_TITLE = "Awesome CVar Manager"
+    L.ADDON_NAME = "AwesomeEpoch"
+    L.ADDON_NAME_SHORT = "Awesome Epoch"
+    L.MAIN_FRAME_TITLE = "AwesomeEpoch Manager"
     L.RESET_TO = "Reset to %s"
 
     -- Popups
@@ -22,16 +21,15 @@ if GetLocale() == "enUS" then
     L.RESET_POPUP_TEXT = "Are you sure you want to reset all values back to their defaults?"
 
     -- Chat Messages
-    L.MSG_LOADED = "Awesome CVar loaded! Type /awesome to open the manager."
+    L.MSG_LOADED = "AwesomeEpoch loaded! Type /awesome to open the manager."
     L.MSG_FRAME_RESET = "Frame position has been reset to the center."
     L.MSG_SET_VALUE = "Set %s to %s."
-    L.MSG_FRAME_CREATE_ERROR = "AwesomeCVar frame could not be created!"
+    L.MSG_FRAME_CREATE_ERROR = "AwesomeEpoch frame could not be created!"
     L.MSG_UNKNOWN_COMMAND = "Unknown command. Type /awesome help for available commands."
-    L.MSG_HELP_HEADER = "Awesome CVar Commands:"
+    L.MSG_HELP_HEADER = "AwesomeEpoch Commands:"
     L.MSG_HELP_TOGGLE = "/awesome - Toggle the CVar manager"
     L.MSG_HELP_SHOW = "/awesome show - Show the CVar manager"
     L.MSG_HELP_HIDE = "/awesome hide - Hide the CVar manager"
-    L.MSG_HELP_RESET = "/awesome reset - Reset frame position to center"
     L.MSG_HELP_HELP = "/awesome help - Show this help message"
 
     -- CVar Categories
@@ -47,7 +45,7 @@ if GetLocale() == "enUS" then
     L.CVAR_LABEL_TTS_SPEED = "TTS Rate"
     L.CVAR_LABEL_CAMERA_FOV = "Camera FoV"
     L.CVAR_LABEL_ENABLE_STACKING = "Enable Nameplate Stacking"
-    L.CVAR_LABEL_STACK_FRIENDLY = "Stack Friendly Nameplates |cffff0000(Reload Required)|r"
+    L.CVAR_LABEL_STACK_FRIENDLY = "Stack Friendly Nameplates"
     L.CVAR_LABEL_FRIENDLY_DETECT_MODE = "Friendly Detection Mode |cffff0000(Reload Required)|r"
     L.CVAR_LABEL_NAMEPLATE_DISTANCE = "Nameplate Distance"
     L.CVAR_LABEL_MAX_RAISE_DISTANCE = "Max Raise Distance"

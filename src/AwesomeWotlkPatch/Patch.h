@@ -8,11 +8,13 @@ struct PatchDetails {
 };
 
 PatchDetails s_patches[] = {
+    /*
     {
-        0x004DCCF0, // lua_ScanDllStart
+        0x004DCCF0, // lua_ScanDllStart (disabled: not required for NamePlate API)
         "B8" "00000000" // mov eax, 1
         "C3"            // ret
     },
+    */
     {
         0x004E5CB0, // ScanDllStart
         "B8" "01000000" // mov eax, 1

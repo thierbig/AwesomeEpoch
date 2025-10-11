@@ -48,6 +48,37 @@ static int CVarHandler_cameraIndirectAlpha(Console::CVar* cvar, const char*, con
     return 1;
 }
 
+// Bridge handler: keep built-in nameplateAllowOverlap in sync with our nameplateStacking
+static Console::CVar::Handler_t s_origNameplateStackingHandler = nullptr;
+static bool s_stackingBridgeApplied = false;
+static bool s_inStackingBridge = false;
+static int CVarHandler_nameplateStacking_bridge(Console::CVar* cvar, const char* name, const char* value, void*)
+{
+    // Mirror overlap based on the new stacking value so OFF truly disables overlap
+    if (!s_inStackingBridge) {
+        s_inStackingBridge = true;
+        if (Console::CVar* allow = Console::FindCVar("nameplateAllowOverlap")) {
+            Console::SetCVarValue(allow, value, 1, 0, 0, 1);
+        }
+        s_inStackingBridge = false;
+    }
+    // Return success without chaining to the original handler to avoid potential crashes
+    return 1;
+}
+
+static void ApplyNameplateStackingBridgeOnce()
+{
+    if (s_stackingBridgeApplied) return;
+    if (Console::CVar* cv = Console::FindCVar("nameplateStacking")) {
+        // Only apply if we're not already bridged
+        if (cv->handler != CVarHandler_nameplateStacking_bridge) {
+            s_origNameplateStackingHandler = cv->handler;
+            cv->handler = CVarHandler_nameplateStacking_bridge;
+            s_stackingBridgeApplied = true;
+        }
+    }
+}
+
 static constexpr float MAX_TRACE_DISTANCE = 1000.0f;
 static constexpr uint32_t TERRAIN_HIT_FLAGS = 0x100171;
 static bool g_cursorKeywordActive = false;
@@ -112,6 +143,14 @@ static void CVars_Initialize_hk()
         }
         if (dst) *dst = cvar;
     }
+    // Clear archive bit (0x1) to prevent engine from persisting custom CVars to Config.wtf
+    for (const auto& [dst, name, desc, flags, initialValue, func] : s_customCVars) {
+        if (Console::CVar* c = Console::FindCVar(name)) {
+            c->flags = (Console::CVarFlags)((unsigned)c->flags & ~1u);
+        }
+    }
+    // Bridge nameplateStacking to control nameplateAllowOverlap consistently (apply once)
+    ApplyNameplateStackingBridgeOnce();
     EVASION_LOG_SUCCESS("CVARS", std::string("CVars_Initialize_hk: processed=") + std::to_string(total) +
         ", created=" + std::to_string(created) + ", existed=" + std::to_string(existed));
 }
@@ -139,45 +178,18 @@ void Hooks::ensureCustomCVarsRegistered()
         if (dst) *dst = cvar;
     }
 
-    // Pre-register essential CVars if still missing (so addons can see/set them immediately)
-    // Use a permissive no-op handler; module-specific handlers will attach later.
-    auto noOp = [](Console::CVar*, const char*, const char*, void*) -> int { return 1; };
-
-    const struct { const char* name; const char* defVal; } essentials[] = {
-        { "cameraFov", "100" },
-        { "showPlayer", "1" },
-        { "interactionAngle", "60" },
-        { "interactionMode", "1" }
-    };
-
-    for (const auto& e : essentials) {
-        if (!Console::FindCVar(e.name)) {
-            Console::RegisterCVar(e.name, nullptr, (Console::CVarFlags)1, e.defVal, noOp, 0, 0, 0, 0);
+    // Skip pre-registering non-nameplate CVars to avoid unrelated memory writes.
+    // NamePlate-related CVars will be registered via NamePlates::initialize and ensured above.
+    // Also clear archive bit (0x1) to prevent engine from persisting custom CVars to Config.wtf
+    for (const auto& [dst, name, desc, flags, initialValue, func] : s_customCVars) {
+        if (Console::CVar* c = Console::FindCVar(name)) {
+            c->flags = (Console::CVarFlags)((unsigned)c->flags & ~1u);
         }
     }
-
-    bool postCameraFov = (Console::FindCVar("cameraFov") != nullptr);
-    if (postCameraFov) {
-        EVASION_LOG_SUCCESS("CVARS", std::string("ensureCustomCVarsRegistered: cameraFov present after ensure (pre=") + (preCameraFov ? "true" : "false") + ", post=true)");
-    } else {
-        EVASION_LOG_ERROR("CVARS", std::string("ensureCustomCVarsRegistered: cameraFov missing after ensure (pre=") + (preCameraFov ? "true" : "false") + ", post=false)");
-    }
-
+    // Ensure the bridge is applied even if registration happened earlier (apply once)
+    ApplyNameplateStackingBridgeOnce();
     EVASION_LOG_SUCCESS("CVARS", std::string("ensureCustomCVarsRegistered: total=") + std::to_string(ensuredTotal) +
         ", created=" + std::to_string(ensuredCreated) + ", upgraded=" + std::to_string(ensuredUpgraded) + ", existed=" + std::to_string(ensuredExisted));
-
-    auto logCVarVal = [](const char* name) {
-        if (auto* c = Console::FindCVar(name)) {
-            EVASION_LOG_SUCCESS("CVARS", std::string("CVar ") + name + "=" + (c->vStr ? c->vStr : "<null>"));
-        } else {
-            EVASION_LOG_ERROR("CVARS", std::string("CVar ") + name + " not found");
-        }
-    };
-    logCVarVal("cameraFov");
-    logCVarVal("cameraIndirectVisibility");
-    logCVarVal("cameraIndirectAlpha");
-    // Might be available already if NamePlates registered before this ensure
-    logCVarVal("nameplateDistance");
 }
 
 
@@ -755,9 +767,10 @@ static void __declspec(naked) CGame_Destroy_hk()
 void Hooks::initialize()
 {
     EVASION_LOG_SUCCESS("HOOKS", "Hooks::initialize: starting detour attachments");
-    Hooks::FrameXML::registerCVar(&s_cvar_cameraIndirectAlpha, "cameraIndirectAlpha", NULL, (Console::CVarFlags)1, "0.6", CVarHandler_cameraIndirectAlpha);
-    Hooks::FrameXML::registerCVar(&s_cvar_cameraIndirectVisibility, "cameraIndirectVisibility", NULL, (Console::CVarFlags)1, "0", CVarHandler_cameraIndirectVisibility);
-    DetourAttach(&(LPVOID&)InvalidFunctionPointerCheck_orig, InvalidFunctionPointerCheck_hk);
+    // NOTE: Keep only hooks relevant to NamePlate API. Comment out unrelated memory writes/hook attachments.
+    // Hooks::FrameXML::registerCVar(&s_cvar_cameraIndirectAlpha, "cameraIndirectAlpha", NULL, (Console::CVarFlags)1, "0.6", CVarHandler_cameraIndirectAlpha);
+    // Hooks::FrameXML::registerCVar(&s_cvar_cameraIndirectVisibility, "cameraIndirectVisibility", NULL, (Console::CVarFlags)1, "0", CVarHandler_cameraIndirectVisibility);
+    // DetourAttach(&(LPVOID&)InvalidFunctionPointerCheck_orig, InvalidFunctionPointerCheck_hk);
     DetourAttach(&(LPVOID&)CVars_Initialize_orig, CVars_Initialize_hk);
     DetourAttach(&(LPVOID&)FrameScript_FireOnUpdate_orig, FrameScript_FireOnUpdate_hk);
     DetourAttach(&(LPVOID&)CGGameUI__EnterWorld, OnEnterWorld);
@@ -766,14 +779,14 @@ void Hooks::initialize()
     DetourAttach(&(LPVOID&)Lua_OpenFrameXMLApi_orig, Lua_OpenFrameXMLApi_hk);
     DetourAttach(&(LPVOID&)GetGuidByKeyword_orig, GetGuidByKeyword_hk);
     DetourAttach(&(LPVOID&)GetKeywordsByGuid_orig, GetKeywordsByGuid_hk);
-    DetourAttach(&(LPVOID&)LoadGlueXML_orig, LoadGlueXML_hk);
-    DetourAttach(&(LPVOID&)LoadCharacters_orig, LoadCharacters_hk);
-    DetourAttach(&(LPVOID&)SecureCmdOptionParse_orig, SecureCmdOptionParse_hk);
-    DetourAttach(&(LPVOID&)ProcessAoETargeting_orig, ProcessAoETargeting_hk);
-    DetourAttach(&(LPVOID&)IterateCollisionList_orig, IterateCollisionList_hk);
-    DetourAttach(&(LPVOID&)IterateWorldObjCollisionList_orig, IterateWorldObjCollisionList_hk);
-    DetourAttach(&(LPVOID&)IntersectCall_orig, IntersectCall_hk);
-    DetourAttach(&(LPVOID&)SpellCastReset_orig, SpellCastReset_hk);
-    DetourAttach(&(LPVOID&)CGame_Destroy_orig, CGame_Destroy_hk);
+    // DetourAttach(&(LPVOID&)LoadGlueXML_orig, LoadGlueXML_hk);
+    // DetourAttach(&(LPVOID&)LoadCharacters_orig, LoadCharacters_hk);
+    // DetourAttach(&(LPVOID&)SecureCmdOptionParse_orig, SecureCmdOptionParse_hk);
+    // DetourAttach(&(LPVOID&)ProcessAoETargeting_orig, ProcessAoETargeting_hk);
+    // DetourAttach(&(LPVOID&)IterateCollisionList_orig, IterateCollisionList_hk);
+    // DetourAttach(&(LPVOID&)IterateWorldObjCollisionList_orig, IterateWorldObjCollisionList_hk);
+    // DetourAttach(&(LPVOID&)IntersectCall_orig, IntersectCall_hk);
+    // DetourAttach(&(LPVOID&)SpellCastReset_orig, SpellCastReset_hk);
+    // DetourAttach(&(LPVOID&)CGame_Destroy_orig, CGame_Destroy_hk);
     EVASION_LOG_SUCCESS("HOOKS", "Hooks::initialize: detour attachments queued");
 }

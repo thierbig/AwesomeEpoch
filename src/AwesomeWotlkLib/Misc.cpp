@@ -350,7 +350,7 @@ static bool triggered = false;
 static void OnEnterWorld()
 {
     if (!triggered) {
-        RegisterInteractCommand(GetLuaState());
+        RegisterInteractCommand(GetLuaState()); 
         RegisterLuaBinding("INTERACTIONKEYBIND", "Interaction Button", "AWESOME_WOTLK_KEYBINDS", "Awesome Wotlk Keybinds", "QueueInteract()");
         updateShowPlayer();
         triggered = true;
@@ -370,8 +370,9 @@ void Misc::initialize()
     Hooks::FrameXML::registerCVar(&s_cvar_interactionAngle, "interactionAngle", NULL, (Console::CVarFlags)1, "60", CVarHandler_interactionAngle);
     Hooks::FrameXML::registerCVar(&s_cvar_interactionMode, "interactionMode", NULL, (Console::CVarFlags)1, "1", CVarHandler_interactionMode);
     Hooks::FrameXML::registerLuaLib(lua_openmisclib);
-
-    DetourAttach(&(LPVOID&)Camera_Initialize_orig, Camera_Initialize_hk);
+    
+    // Disabled: camera FOV detour not required for NamePlate API
+    // DetourAttach(&(LPVOID&)Camera_Initialize_orig, Camera_Initialize_hk);
     Hooks::FrameScript::registerOnEnter(OnEnterWorld);
     Hooks::FrameScript::registerOnLeave(OnLeaveWorld);
 }

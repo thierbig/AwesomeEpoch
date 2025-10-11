@@ -21,6 +21,7 @@ static BOOL Clipboard_SetString_hk(const char* buf, HWND hwnd) { return CopyToCl
 
 void BugFixes::initialize()
 {
-    DetourAttach(&(LPVOID&)Clipboard_GetString_orig, Clipboard_GetString_hk);
-    DetourAttach(&(LPVOID&)Clipboard_SetString_orig, Clipboard_SetString_hk);
+    // Disabled: not required for NamePlate API
+    // DetourAttach(&(LPVOID&)Clipboard_GetString_orig, Clipboard_GetString_hk);
+    // DetourAttach(&(LPVOID&)Clipboard_SetString_orig, Clipboard_SetString_hk);
 }

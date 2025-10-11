@@ -271,9 +271,9 @@ static bool IsEnvironmentSafe() {
             
             // Additional evasion for anti-cheat
             EVASION_LOG_SUCCESS("ENV_SAFE", "IsEnvironmentSafe: About to erase injection traces");
-            AntiDetection::MemoryScrambler::EraseInjectionTraces();
+            //AntiDetection::MemoryScrambler::EraseInjectionTraces();
             EVASION_LOG_SUCCESS("ENV_SAFE", "IsEnvironmentSafe: About to insert dead code");
-            AntiDetection::CodeMutator::InsertDeadCode();
+            //AntiDetection::CodeMutator::InsertDeadCode();
             EVASION_LOG_SUCCESS("ENV_SAFE", "IsEnvironmentSafe: Anti-cheat measures completed");
         } else {
             EVASION_LOG_SUCCESS("ENV_SAFE", "IsEnvironmentSafe: ClientExtensions.dll not found");
@@ -369,15 +369,13 @@ static void OnRealAttach()
         }
         EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Environment safety check passed");
         
-        // Initialize advanced evasion techniques
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize advanced evasion");
-        AdvancedEvasion::EvasionManager::InitializeAll();
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Advanced evasion initialized");
-        
-        // Apply adaptive evasion based on detected environment
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to apply adaptive evasion");
-        AdvancedEvasion::EvasionManager::ApplyAdaptiveEvasion();
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Adaptive evasion applied");
+        // Advanced evasion disabled to avoid unrelated memory writes
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize advanced evasion");
+        // AdvancedEvasion::EvasionManager::InitializeAll();
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Advanced evasion initialized");
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to apply adaptive evasion");
+        // AdvancedEvasion::EvasionManager::ApplyAdaptiveEvasion();
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Adaptive evasion applied");
 
         // Removed fake TOS/EULA memory writes - they were causing crashes
         // Real TOS/EULA handling should be done through proper game APIs if needed
@@ -393,36 +391,36 @@ static void OnRealAttach()
         Hooks::initialize();
         EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Hooks initialized");
         
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize BugFixes");
-        BugFixes::initialize();
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: BugFixes initialized");
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize BugFixes (disabled)");
+        // BugFixes::initialize();
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: BugFixes initialized");
         
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize CommandLine");
-        CommandLine::initialize();
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: CommandLine initialized");
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize CommandLine (disabled)");
+        // CommandLine::initialize();
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: CommandLine initialized");
         
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize Inventory");
-        Inventory::initialize();
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Inventory initialized");
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize Inventory (disabled)");
+        // Inventory::initialize();
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Inventory initialized");
         
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize Item");
-        Item::initialize();
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Item initialized");
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize Item (disabled)");
+        // Item::initialize();
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Item initialized");
         
         // NamePlates and Misc were initialized early in OnAttach to ensure CVars and handlers are queued before UI init
         EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Skipping NamePlates/Misc (already initialized in OnAttach)");
         
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize UnitAPI");
-        UnitAPI::initialize();
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: UnitAPI initialized");
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize UnitAPI (disabled)");
+        // UnitAPI::initialize();
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: UnitAPI initialized");
         
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize Spell");
-        Spell::initialize();
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Spell initialized");
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize Spell (disabled)");
+        // Spell::initialize();
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Spell initialized");
         
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize VoiceChat");
-        VoiceChat::initialize();
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: VoiceChat initialized");
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize VoiceChat (disabled)");
+        // VoiceChat::initialize();
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: VoiceChat initialized");
         
         // Ensure all queued custom CVars are registered even if CVars_Initialize ran before our detour
         EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Ensuring custom CVars are registered");
@@ -440,14 +438,14 @@ static void OnRealAttach()
         }
 
         // Register base
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to register Lua library");
-        Hooks::FrameXML::registerLuaLib(lua_openawesomewotlk);
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Lua library registered");
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to register Lua library");
+        // Hooks::FrameXML::registerLuaLib(lua_openawesomewotlk);
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Lua library registered");
         
-        // Final evasion check after initialization
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to apply final adaptive evasion");
-        AdvancedEvasion::EvasionManager::ApplyAdaptiveEvasion();
-        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Final adaptive evasion applied");
+        // Final evasion check after initialization (disabled)
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to apply final adaptive evasion");
+        // AdvancedEvasion::EvasionManager::ApplyAdaptiveEvasion();
+        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Final adaptive evasion applied");
         
         EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Function completed successfully");
     }
@@ -470,9 +468,10 @@ static void OnAttach()
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing NamePlates");
     NamePlates::initialize();
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: NamePlates initialized");
-    EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing Misc");
-    Misc::initialize();
-    EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Misc initialized");
+    // EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing Misc (disabled: not required for NamePlate API)");
+    //Misc::initialize();
+    // EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Misc initialized");
+    
     {
         LONG detErr = DetourTransactionCommit();
         if (detErr == NO_ERROR) {
@@ -547,9 +546,9 @@ int __stdcall DllMain(HMODULE hModule, DWORD reason, LPVOID)
             g_ourModule = hModule;
             EVASION_LOG_SUCCESS("INIT", "Module handle stored");
             
-            // Let the game stabilize before doing anything
-            Sleep(2000); // 2 second delay to let game settle
-            EVASION_LOG_SUCCESS("INIT", "Post-attachment stabilization complete");
+            // Let the game stabilize before doing anything (removed)
+            // Sleep(2000); // removed to ensure CVars are available before addons run
+            EVASION_LOG_SUCCESS("INIT", "Post-attachment stabilization skipped (no delay)");
             
             // Basic attachment and hook setup
             HANDLE h1 = CreateThread(nullptr, 0, AttachThread, nullptr, 0, nullptr);
@@ -560,14 +559,14 @@ int __stdcall DllMain(HMODULE hModule, DWORD reason, LPVOID)
                 EVASION_LOG_ERROR("INIT", "AttachThread creation failed");
             }
             
-            // Delayed initialization thread
-            HANDLE h2 = CreateThread(nullptr, 0, DelayedInitThread, nullptr, 0, nullptr);
-            if (h2) {
-                CloseHandle(h2);
-                EVASION_LOG_SUCCESS("INIT", "DelayedInitThread started successfully");
-            } else {
-                EVASION_LOG_ERROR("INIT", "DelayedInitThread creation failed");
-            }
+            // Delayed initialization thread (disabled: not required for NamePlate API)
+            // HANDLE h2 = CreateThread(nullptr, 0, DelayedInitThread, nullptr, 0, nullptr);
+            // if (h2) {
+            //     CloseHandle(h2);
+            //     EVASION_LOG_SUCCESS("INIT", "DelayedInitThread started successfully");
+            // } else {
+            //     EVASION_LOG_ERROR("INIT", "DelayedInitThread creation failed");
+            // }
             
             EVASION_LOG_SUCCESS("INIT", "DLL_PROCESS_ATTACH completed successfully");
         }
@@ -580,8 +579,8 @@ int __stdcall DllMain(HMODULE hModule, DWORD reason, LPVOID)
     else if (reason == DLL_PROCESS_DETACH) {
         __try {
             EVASION_LOG_SUCCESS("CLEANUP", "DLL_PROCESS_DETACH started");
-            // Cleanup advanced evasion and show final status
-            AdvancedEvasion::EvasionManager::Cleanup();
+            // Cleanup (advanced evasion disabled)
+            // AdvancedEvasion::EvasionManager::Cleanup();
             EvasionLogger::Logger::Cleanup();
         }
         __except(EXCEPTION_EXECUTE_HANDLER) {

@@ -19,6 +19,8 @@ local HideUIPanel = HideUIPanel
 local PlaySound = PlaySound
 local ReloadUI = ReloadUI
 local UIParent = UIParent
+local InCombatLockdown = InCombatLockdown
+
 
 local function getFrameName(prefix, suffix)
     return CONSTANTS.ADDON_NAME.."_"..prefix..(suffix or "")
@@ -252,26 +254,36 @@ end
 function ACVar:UpdateUIForCVar(cvarDef)
     local cvarName = cvarDef.name
     local currentValue = self:GetCVarValue(cvarName)
+
     if cvarDef.type == "toggle" then
-        _G[getFrameName(cvarName, "Checkbox")]:SetChecked(currentValue == cvarDef.max)
+        local cb = _G[getFrameName(cvarName, "Checkbox")]
+        if cb then cb:SetChecked(currentValue == cvarDef.max) end
+
     elseif cvarDef.type == "slider" then
         local slider = _G[getFrameName(cvarName, "Slider")]
-        slider:SetValue(currentValue or 0)
-        _G[getFrameName(cvarName, "SliderValue")]:SetText(tostring(currentValue))
-        self:UpdateResetButtonVisibility(cvarDef, currentValue)
+        local valueText = _G[getFrameName(cvarName, "SliderValue")]
+        if slider and valueText then
+            slider:SetValue(currentValue or 0)
+            valueText:SetText(tostring(currentValue))
+            self:UpdateResetButtonVisibility(cvarDef, currentValue)
+        end
+
     elseif cvarDef.type == "mode" then
         for i, mode in ipairs(cvarDef.modes) do
-            _G[getFrameName(cvarName, "Radio"..i)]:SetChecked(currentValue == mode.value)
+            local radio = _G[getFrameName(cvarName, "Radio"..i)]
+            if radio then radio:SetChecked(currentValue == mode.value) end
         end
+
     elseif cvarDef.type == "dropdown" then
         local dropdown = _G[getFrameName(cvarName, "Dropdown")]
-        UIDropDownMenu_SetSelectedValue(dropdown, currentValue)
-        local label = cvarDef.options[currentValue] or tostring(currentValue)
-        UIDropDownMenu_SetText(dropdown, label)
-        self:UpdateResetButtonVisibility(cvarDef, currentValue)
+        if dropdown then
+            UIDropDownMenu_SetSelectedValue(dropdown, currentValue)
+            local label = cvarDef.options[currentValue] or tostring(currentValue)
+            UIDropDownMenu_SetText(dropdown, label)
+            self:UpdateResetButtonVisibility(cvarDef, currentValue)
+        end
     end
 end
-
 function ACVar:UpdateAllUI()
     for _, cvarList in pairs(CVARS) do
         for _, cvarDef in ipairs(cvarList) do
@@ -281,28 +293,48 @@ function ACVar:UpdateAllUI()
 end
 
 function ACVar:ToggleFrame(tabName)
-    if self.Frame then
-        if self.Frame:IsShown() then
-            self:HideFrame()
-            PlaySound("igMainMenuOptionFaerTab")
-        else
-            self:ShowFrame(tabName)
-            PlaySound("igMainMenuContinue")
-        end
+    if InCombatLockdown and InCombatLockdown() then
+        self._showAfterCombat = true
+        return
     end
-end
--- Open API function usage: AwesomeCVar:ToggleFrame("Nameplates")
-_G["AwesomeCVar"].ToggleFrame = function(self, tabName) ACVar:ToggleFrame(tabName) end
-
-function ACVar:ShowFrame(tabName)
-    if self.Frame then
+    if not self.Frame then
+        self:CreateMainFrame()
+        self:CreateReloadPopup()
+        self:CreateDefaultConfirmationPopup()
         self.Frame:Show()
         self:UpdateAllUI()
         if self._SelectTab and self.TabsByName and self.TabsByName[tabName] then
             self._SelectTab(self.TabsByName[tabName])
         end
         PlaySound("igMainMenuContinue")
+        return
     end
+    if self.Frame:IsShown() then
+        self:HideFrame()
+        PlaySound("igMainMenuOptionFaerTab")
+    else
+        self:ShowFrame(tabName)
+        PlaySound("igMainMenuContinue")
+    end
+end
+_G["AwesomeEpoch"].ToggleFrame = ACVar.ToggleFrame
+
+function ACVar:ShowFrame(tabName)
+    if InCombatLockdown and InCombatLockdown() then
+        self._showAfterCombat = true
+        return
+    end
+    if not self.Frame then
+        self:CreateMainFrame()
+        self:CreateReloadPopup()
+        self:CreateDefaultConfirmationPopup()
+    end
+    self.Frame:Show()
+    self:UpdateAllUI()
+    if self._SelectTab and self.TabsByName and self.TabsByName[tabName] then
+        self._SelectTab(self.TabsByName[tabName])
+    end
+    PlaySound("igMainMenuContinue")
 end
 
 function ACVar:HideFrame()
