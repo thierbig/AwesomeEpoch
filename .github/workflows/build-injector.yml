@@ -1,0 +1,54 @@
+name: Build Injector (x86)
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build-injector:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup MSVC (x86)
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
+
+      - name: Fix Detours Interlocked Functions
+        shell: pwsh
+        run: |
+          echo "#define NOWINBASEINTERLOCK" > detours_fix.h
+          echo "#include <intrin.h>" >> detours_fix.h
+          echo "#pragma intrinsic(_InterlockedExchangeAdd)" >> detours_fix.h
+          echo "#pragma intrinsic(_InterlockedCompareExchange)" >> detours_fix.h
+          echo "#pragma intrinsic(_InterlockedCompareExchange64)" >> detours_fix.h
+
+          # Prepend include to deps/Detours/modules.cpp (safe on fresh clones)
+          $content = Get-Content "deps\Detours\modules.cpp" -Raw
+          $fixedContent = "#include `"../../detours_fix.h`"`n" + $content
+          Set-Content "deps\Detours\modules.cpp" $fixedContent
+
+      - name: Configure with CMake (Win32)
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "Visual Studio 17 2022" -A Win32 -DCMAKE_CXX_FLAGS="/DNOWINBASEINTERLOCK /D_WIN32_WINNT=0x0601"
+
+      - name: Build DLL and Injector (Release)
+        run: |
+          cd build
+          cmake --build . --config Release --target AwesomeWotlkLib AwesomeWotlkInjector --parallel
+
+      - name: Upload DLL and Injector artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: awesome-wotlk-lib-and-injector-x86
+          path: |
+            build/Release/*.dll
+            build/Release/*.exe
+          retention-days: 7
