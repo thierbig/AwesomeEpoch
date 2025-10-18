@@ -85,7 +85,7 @@ To enable castbars over all enemy nameplates, you need to enable [PlateCastBarFi
   
 
 ## Notes
-- **Nameplate Distance Limitation**: Changing nameplate distance is disabled as it’s considered cheating.
+- **Nameplate Distance Limitation**: You can't go past Epoch's limitation via this mod.
 - **Run as Administrator**: Always run `AwesomeEpoch.exe`  or manual injection commands with administrator privileges to avoid permission issues.
 - **Logs**: Check logs files `AutoInject_Awesome.log` and `injector_output.log` to diagnose issues.
 - **Support**: For issues or feature requests, create an issue on the [GitHub Issues](https://github.com/thierbig/AwesomeEpoch/issues) page.
