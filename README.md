@@ -20,8 +20,8 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
 - **Addons** (required for full functionality):
   - **AwesomeEpochManager**: Enables custom CVar settings for modern features. (download below)
   - **PlateCastBarFixed**: Castbars on all nameplates
-  - **WeakAuras**: WeakAuras is a powerful and flexible framework that allows the display of highly customizable graphics on World of Warcraft's user interface to indicate buffs, debuffs, and other relevant information. NoM0Re version. (download below)
-  - (Optional)**Flash**: For notifications on minimized icon bar
+  - (Optional) WeakAuras: WeakAuras is a powerful and flexible framework that allows the display of highly customizable graphics on World of Warcraft's user interface to indicate buffs, debuffs, and other relevant information. NoM0Re version. (download below)
+  - (Optional) Flash: For notifications on minimized icon bar
   - Download and install these addons in your Ascension `Interface\AddOns` folder.
 
 ## Installation
@@ -65,7 +65,7 @@ For users who prefer manual control:
 ### Interaction Button for handheld console
 <img width="930" height="102" alt="image" src="https://github.com/user-attachments/assets/cdd0fc44-e796-4891-a722-1f5f1932e25d" />
 
-### AwesomeEpoch Addon
+### AwesomeEpochManager Addon
 <img width="365" height="503" alt="image" src="https://github.com/user-attachments/assets/db57b337-9bff-4bc7-b82a-b134e7c18ed6" />
 <img width="1216" height="911" alt="image" src="https://github.com/user-attachments/assets/674fb2f8-3efb-47c7-81d9-6394d6338248" />
 
