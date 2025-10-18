@@ -18,10 +18,10 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
 ## Prerequisites
 - **World of Warcraft: Ascension** installed, with `Ascension.exe` accessible.
 - **Addons** (required for full functionality):
-  - **AwesomeCVar**: Enables custom CVar settings for modern features. (download below)
-  - **Flash**: Supports additional visual enhancements.(download below)
+  - **AwesomeEpochManager**: Enables custom CVar settings for modern features. (download below)
   - **PlateCastBarFixed**: Castbars on all nameplates
   - **WeakAuras**: WeakAuras is a powerful and flexible framework that allows the display of highly customizable graphics on World of Warcraft's user interface to indicate buffs, debuffs, and other relevant information. NoM0Re version. (download below)
+  - (Optional)**Flash**: For notifications on minimized icon bar
   - Download and install these addons in your Ascension `Interface\AddOns` folder.
 
 ## Installation
@@ -30,7 +30,7 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
    - Extract the AwesomeEpoch folder to a location of your choice (e.g., `C:\Users\YourName\AwesomeEpoch`).
 
 2. **Install Required Addons**:
-   - Download **AwesomeCVar** and **Flash** [addons](https://github.com/someweirdhuman/awesome_wotlk/releases/download/v30/addons_v30.zip)
+   - Download **AwesomeEpochManager** from releases
    - Download [PlateCastBarFixed](https://github.com/thierbig/PlateCastBar-3.3.5-Fixed/archive/refs/heads/main.zip)
    - (Optional) Download [WeakAuras](https://github.com/NoM0Re/WeakAuras-WotLK/archive/refs/heads/master.zip)
    - Place the addons in your Ascension `Interface\AddOns` directory (e.g., `C:\Program Files\Ascension Launcher\resources\epoch_live\Interface\AddOns`).
@@ -65,9 +65,10 @@ For users who prefer manual control:
 ### Interaction Button for handheld console
 <img width="930" height="102" alt="image" src="https://github.com/user-attachments/assets/cdd0fc44-e796-4891-a722-1f5f1932e25d" />
 
-### Awesome CVar Addon
-<img width="328" height="251" alt="image" src="https://github.com/user-attachments/assets/f1c3b8a9-10ec-46de-8cd9-5a184577c8af" />
-<img width="1205" height="906" alt="image" src="https://github.com/user-attachments/assets/f74a2725-6341-4650-88f3-952012660264" />
+### AwesomeEpoch Addon
+<img width="365" height="503" alt="image" src="https://github.com/user-attachments/assets/db57b337-9bff-4bc7-b82a-b134e7c18ed6" />
+<img width="1216" height="911" alt="image" src="https://github.com/user-attachments/assets/674fb2f8-3efb-47c7-81d9-6394d6338248" />
+
 
 ### Enabling Castbars
 To enable castbars over all enemy nameplates, you need to enable [PlateCastBarFixed](https://github.com/thierbig/PlateCastBar-3.3.5-Fixed/archive/refs/heads/main.zip)
@@ -80,7 +81,7 @@ To enable castbars over all enemy nameplates, you need to enable [PlateCastBarFi
 - **Injection fails**:
   - Verify `Ascension.exe` is running before manual injection.
   - Check if `AwesomeWotlkInjector.exe` is in the release folder or the `AwesomeWotlkInjector` subfolder.
-  - Ensure you have the required addons (`AwesomeCVar`, `Flash`, `WeakAuras`).
+  - Ensure you have the required addons (`AwesomeEpochManager`, `Flash`, `WeakAuras`).
   
 
 ## Notes
