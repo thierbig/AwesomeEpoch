@@ -30,7 +30,7 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
    - Extract the AwesomeEpoch folder to a location of your choice (e.g., `C:\Users\YourName\AwesomeEpoch`).
 
 2. **Install Required Addons**:
-   - Download **AwesomeEpochManager** from releases
+   - Download **AwesomeEpochManager** from [releases](https://github.com/thierbig/AwesomeEpoch/releases/download/2.0/Addons.zip)
    - Download [PlateCastBarFixed](https://github.com/thierbig/PlateCastBar-3.3.5-Fixed/archive/refs/heads/main.zip)
    - (Optional) Download [WeakAuras](https://github.com/NoM0Re/WeakAuras-WotLK/archive/refs/heads/master.zip)
    - Place the addons in your Ascension `Interface\AddOns` directory (e.g., `C:\Program Files\Ascension Launcher\resources\epoch_live\Interface\AddOns`).
