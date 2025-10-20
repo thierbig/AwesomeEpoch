@@ -71,7 +71,7 @@ For users who prefer manual control:
 
 
 ### Enabling Castbars
-To enable castbars over all enemy nameplates, you need to enable [PlateCastBarFixed](https://github.com/thierbig/PlateCastBar-3.3.5-Fixed/archive/refs/heads/main.zip)
+To enable castbars over all enemy nameplates, you need to install [PlateCastBarFixed](https://github.com/thierbig/PlateCastBar-3.3.5-Fixed/archive/refs/heads/main.zip)
 
 ## Troubleshooting
 - **AwesomeEpoch.exe not working**:
@@ -91,7 +91,7 @@ To enable castbars over all enemy nameplates, you need to enable [PlateCastBarFi
 - **Support**: For issues or feature requests, create an issue on the [GitHub Issues](https://github.com/thierbig/AwesomeEpoch/issues) page.
 
 ## Credits
-AwesomeEpoch is built upon the **awesome_wotlk** project by **[someweirdhuman](https://github.com/someweirdhuman)**, [NoM0Re](https://github.com/NoM0Re)** and **[FrostAtom](https://github.com/FrostAtom)**. Their work on the [awesome_wotlk](https://github.com/someweirdhuman/awesome_wotlk) patcher enables the modern CVar features that make this tool possible. Thank you for their contributions to the WoW community!
+AwesomeEpoch is built upon the **awesome_wotlk** project by **[someweirdhuman](https://github.com/someweirdhuman)**, **[NoM0Re](https://github.com/NoM0Re)** and **[FrostAtom](https://github.com/FrostAtom)**. Their work on the [awesome_wotlk](https://github.com/someweirdhuman/awesome_wotlk) patcher enables the modern CVar features that make this tool possible. Thank you for their contributions to the WoW community!
 
 ## Other Mods I maintain
 - [PlateCastBarFixed](https://github.com/thierbig/PlateCastBar-3.3.5-Fixed)
