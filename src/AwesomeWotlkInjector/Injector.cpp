@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cwctype>
 #include "ManualMapper.h"
+#include "../Common/GameExeConfig.h"
 
 // Verbosity control - change this to false for production
 // Or set via environment variable AWESOME_VERBOSE=0 for production
@@ -143,9 +144,17 @@ int wmain(int argc, wchar_t* argv[]) {
     
     // Decrypt obfuscated strings
     std::vector<std::wstring> processNames = {
+        L"Wow.exe",
         DecryptString(ENCRYPTED_PROCESS_NAME_1), // "Project Epoch.exe"
         DecryptString(ENCRYPTED_PROCESS_NAME_2)  // "ascension.exe"
     };
+
+    // A configured gameExeLocation.txt value takes priority; match by filename.
+    const std::string cfgValue = GameExeConfig::readConfiguredValue();
+    const std::string cfgName = GameExeConfig::basename(cfgValue);
+    if (!cfgName.empty()) {
+        processNames.insert(processNames.begin(), GameExeConfig::widen(cfgName));
+    }
     std::wstring dllName = L"AwesomeWotlkLib.dll"; // Fixed: no more obfuscation issues
     std::wstring targetProcessName;
     bool forceManualMapping = false;
@@ -209,7 +218,7 @@ int wmain(int argc, wchar_t* argv[]) {
         if (!targetProcessName.empty()) {
             LOG_ERROR(L"Error: Process '" + targetProcessName + L"' not found.");
         } else {
-            LOG_ERROR(L"Error: Neither 'Project Epoch.exe' nor 'ascension.exe' found.");
+            LOG_ERROR(L"Error: No game client process found (looked for Wow.exe / Project Epoch.exe / ascension.exe, plus any gameExeLocation.txt value).");
         }
         return 1;
     }
