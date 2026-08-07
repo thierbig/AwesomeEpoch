@@ -12,6 +12,7 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
   - Display castbars over enemy nameplates for improved situational awareness.
 - **Custom Game Path**: Set a custom path, folder, or filename for the client executable (defaults to `Wow.exe`) via `gameExeLocation.txt`, even if it’s outside default locations (e.g., Program Files, C:\Games).
 - **Manual Injection Option**: Run the injector directly with a simple command for users who prefer manual control.
+- **MSDF Vector Fonts**: Crisp, vector-based (MSDF) text rendering ported from upstream `awesome_wotlk`, controlled by the `MSDFMode` CVar (`0` = off, `1` = on, `2` = on incl. unsafe fonts). Requires `skia.dll`, which ships in the release and must sit in the game folder next to `AwesomeWotlkLib.dll` (the patcher copies it automatically).
 - **Additional QoL Features**: Various enhancements to improve gameplay.
 
 ## Prerequisites
