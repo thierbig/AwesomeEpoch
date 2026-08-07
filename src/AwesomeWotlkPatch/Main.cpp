@@ -124,6 +124,15 @@ int main(int argc, char** argv)
         std::filesystem::copy_file(libInAppPath, libInGamePath, ec);
     }
 
+    // MSDF runtime dependency: AwesomeWotlkLib.dll links skia.dll, so it must sit in the game
+    // folder too. Copy it next to the library if it's shipped alongside the patcher.
+    std::filesystem::path skiaInGamePath = std::filesystem::path(exePath).parent_path() / "skia.dll";
+    std::filesystem::path skiaInAppPath = std::filesystem::absolute(argv[0]).parent_path() / "skia.dll";
+    if (!std::filesystem::is_regular_file(skiaInGamePath) && std::filesystem::is_regular_file(skiaInAppPath)) {
+        std::error_code ec;
+        std::filesystem::copy_file(skiaInAppPath, skiaInGamePath, ec);
+    }
+
     if (std::filesystem::is_regular_file(libInGamePath)) {
         message(MB_ICONINFORMATION,
             "Patch succesfully applied on {} \n"
