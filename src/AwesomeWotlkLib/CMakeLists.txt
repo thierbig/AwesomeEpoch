@@ -39,3 +39,7 @@ target_compile_definitions(
     ${PROJECT_NAME} PRIVATE
         APP_NAME="${PROJECT_NAME}"
 )
+
+# Isolated upstream MSDF/D3D font-rendering library (compiled against upstream's headers).
+add_subdirectory( msdf )
+target_link_libraries( ${PROJECT_NAME} PRIVATE AwesomeMSDF )

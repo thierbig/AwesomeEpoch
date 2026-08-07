@@ -112,3 +112,8 @@ logs/
 *.rar
 *.tar
 *.zip
+
+# Vendored prebuilt Skia binaries (required to build/link and run the MSDF font pipeline).
+# These are the one intentional exception to the *.dll / *.lib ignore rules above.
+!deps/skia/skia.dll
+!deps/skia/skia.lib

@@ -19,6 +19,8 @@
 #include <random>
 #include <vector>
 #include <cwchar>
+#include <cstdlib>
+#include "MSDFBridge.h"
 
 // Forward declarations
 static void OnRealAttach();
@@ -454,6 +456,15 @@ static void OnRealAttach()
     }
 }
 
+// MSDFMode CVar is owned by the fork (fork Hooks/CVar types) and forwards its parsed value to
+// the isolated MSDF library. 0 = disabled, 1 = enabled, 2 = enabled-unsafe.
+static Console::CVar* s_cvar_MSDFMode = nullptr;
+static int CVarHandler_MSDFMode(Console::CVar*, const char*, const char* value, LPVOID)
+{
+    MSDF::setMode(value ? atoi(value) : 1);
+    return 1;
+}
+
 static void OnAttach()
 {
     // Set up basic hooks only - no world detection needed
@@ -468,6 +479,11 @@ static void OnAttach()
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing NamePlates");
     NamePlates::initialize();
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: NamePlates initialized");
+    // Isolated MSDF/D3D font rendering: attach the D3D9 device detours inside this transaction,
+    // and register the fork-owned MSDFMode CVar (its handler forwards to MSDF::setMode, which
+    // enables the pipeline and attaches the FreeType detour when non-zero).
+    D3D::initialize();
+    Hooks::FrameXML::registerCVar(&s_cvar_MSDFMode, "MSDFMode", NULL, (Console::CVarFlags)1, "1", CVarHandler_MSDFMode);
     // EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing Misc (disabled: not required for NamePlate API)");
     //Misc::initialize();
     // EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Misc initialized");
