@@ -13,7 +13,6 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
 - **Custom Game Path**: Set a custom path, folder, or filename for the client executable (defaults to `Wow.exe`) via `gameExeLocation.txt`, even if it’s outside default locations (e.g., Program Files, C:\Games).
 - **Manual Injection Option**: Run the injector directly with a simple command for users who prefer manual control.
 - **Additional QoL Features**: Various enhancements to improve gameplay.
-- **Logging**: Detailed logs in `AutoInject_Awesome.log` and `injector_output.log` for troubleshooting.
 
 ## Prerequisites
 - The base **World of Warcraft 3.3.5a** client installed, with `Wow.exe` accessible (the tool also supports `Project-Epoch.exe` or `Ascension.exe` if that's what your install uses — see **Custom Game Path** below).
@@ -41,9 +40,22 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
    - Leave it commented (or delete the file) to use the default search order: `Wow.exe`, then `Project-Epoch.exe`, then `Ascension.exe`.
 
 ## Usage
-### Injection
+### Patching (Default)
+The main release zip ships `AwesomeWotlkPatch.exe`, `AwesomeWotlkLib.dll`, and `gameExeLocation.txt`, so this is the flow that works right out of the downloaded release with no extra steps.
+1. Open a Command Prompt as administrator and navigate to the release folder:
+   ```
+   cd C:\Users\YourName\AwesomeEpoch
+   ```
+2. Run the patcher:
+   ```
+   AwesomeWotlkPatch.exe
+   ```
+   `AwesomeWotlkPatch.exe` reads `gameExeLocation.txt` (in the folder it runs from) to locate the client executable and patches it directly. The value can be a full path, just a folder, or a bare filename, and defaults to `Wow.exe` if left unset.
+
+### Injection (Alternative / Advanced)
+Instead of patching the executable, you can inject the CVar settings into a client that's already running, using `AwesomeWotlkInjector.exe`. Note: **the injector is not included in the main release zip** — it's built separately by the `build-injector.yml` workflow, so you'll need to grab it from that workflow's build artifacts if you want to use this method.
 1. Start the game client yourself (via its launcher, or by running the exe directly) and let it fully load.
-2. Open a Command Prompt as administrator and navigate to the release folder:
+2. Open a Command Prompt as administrator and navigate to the folder containing `AwesomeWotlkInjector.exe`:
    ```
    cd C:\Users\YourName\AwesomeEpoch
    ```
@@ -52,13 +64,6 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
    AwesomeWotlkInjector.exe
    ```
    `AwesomeWotlkInjector.exe` reads `gameExeLocation.txt` (in the folder it runs from) to find the running client process and injects the CVar settings into it.
-
-### Patching (Alternative)
-If you'd rather patch the client executable directly instead of injecting at runtime:
-```
-AwesomeWotlkPatch.exe
-```
-`AwesomeWotlkPatch.exe` also reads `gameExeLocation.txt` to locate the executable to patch.
 
 ### Interaction Button for handheld console
 <img width="930" height="102" alt="image" src="https://github.com/user-attachments/assets/cdd0fc44-e796-4891-a722-1f5f1932e25d" />
@@ -73,7 +78,6 @@ To enable castbars over all enemy nameplates, you need to install [PlateCastBarF
 
 ## Troubleshooting
 - **Injection not working**:
-  - Check `AutoInject_Awesome.log` and `injector_output.log` in the release folder for errors.
   - Ensure `gameExeLocation.txt` contains a valid path to your game client executable or its folder, or leave it commented for default paths.
   - Run `AwesomeWotlkInjector.exe` or `AwesomeWotlkPatch.exe` as administrator.
 - **Injection fails**:
@@ -84,7 +88,6 @@ To enable castbars over all enemy nameplates, you need to install [PlateCastBarF
 
 ## Notes
 - **Run as Administrator**: Always run `AwesomeWotlkInjector.exe` or `AwesomeWotlkPatch.exe` with administrator privileges to avoid permission issues.
-- **Logs**: Check logs files `AutoInject_Awesome.log` and `injector_output.log` to diagnose issues.
 - **Support**: For issues or feature requests, create an issue on the [GitHub Issues](https://github.com/thierbig/AwesomeEpoch/issues) page.
 
 ## Credits

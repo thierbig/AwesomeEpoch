@@ -9,6 +9,7 @@
 #include "../Common/GameExeConfig.h"
 #include <algorithm>
 #include <cctype>
+#include <cstring>
 #include <vector>
 #define AWESOMEWOTLKLIB_DLL "AwesomeWotlkLib.dll"
 
