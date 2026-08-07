@@ -484,6 +484,9 @@ static void OnAttach()
     // enables the pipeline and attaches the FreeType detour when non-zero).
     D3D::initialize();
     Hooks::FrameXML::registerCVar(&s_cvar_MSDFMode, "MSDFMode", NULL, (Console::CVarFlags)1, "1", CVarHandler_MSDFMode);
+    // Per-session chat/combat log filename CVars (self-contained pointer patches; registered
+    // here rather than via the disabled Misc::initialize()).
+    Misc::registerLogSessionCVars();
     // EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing Misc (disabled: not required for NamePlate API)");
     //Misc::initialize();
     // EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Misc initialized");
