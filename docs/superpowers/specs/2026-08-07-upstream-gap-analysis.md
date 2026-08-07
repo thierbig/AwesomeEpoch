@@ -46,8 +46,9 @@ the fork classification does not change based on their internals.
 
 Local commands run against this repo: `ls src/AwesomeWotlkLib`,
 `grep -rn "registerCVar\|registerFunction\|registerEvent" src/AwesomeWotlkLib` (41 hits, no
-`registerFunction` — Lua functions are exposed via `luaL_Reg` tables and `lua_pushcfunction`,
-not a `registerFunction` call, see §2), `wc -c` on every fork lib file for size comparison.
+`registerFunction` — Lua functions are exposed via `luaL_Reg` tables or direct
+`lua_pushcfunction`/`lua_setglobal`, depending on the module, not a `registerFunction` call, see
+§2), `wc -c` on every fork lib file for size comparison.
 
 ## 2. Fork inventory (verified against this checkout)
 
@@ -75,8 +76,9 @@ NAME_PLATE_UNIT_ADDED, NAME_PLATE_UNIT_REMOVED, NAME_PLATE_OWNER_CHANGED,
 VOICE_CHAT_TTS_PLAYBACK_{FAILED,FINISHED,STARTED}, VOICE_CHAT_TTS_SPEAK_TEXT_UPDATE,
 VOICE_CHAT_TTS_VOICES_UPDATE.
 
-Lua API surface (via `luaL_Reg` tables, confirmed present and functionally matching upstream's
-`docs/api_reference.md`): `UnitAPI.cpp` (UnitIsControlled/Disarmed/Silenced, UnitOccupations,
+Lua API surface (via `luaL_Reg` tables or direct `lua_pushcfunction`/`lua_setglobal`, depending
+on the module; confirmed present and functionally matching upstream's `docs/api_reference.md`):
+`UnitAPI.cpp` (UnitIsControlled/Disarmed/Silenced, UnitOccupations,
 UnitOwner, UnitTokenFromGUID), `Inventory.cpp` (GetInventoryItemTransmog), `Item.cpp`
 (GetItemInfoInstant), `Spell.cpp` (GetSpellBaseCooldown), `VoiceChat.cpp` (C_VoiceChat,
 C_TTSSettings), `NamePlates.cpp` (C_NamePlate + Get/SetStackingEnabled,
@@ -217,7 +219,7 @@ collisions, shared-hook signature work, hardcoded-address verification, or thoug
 | 6 | Bugfix (not a port item): `CommandLine.cpp` `realmname` null-guard | Found via diff against upstream's `CommandLine.cpp` | **safe** | trivial (1-line fix) | Missing `&& realmname` guard before `Console::SetCVarValue` call; NULL value passed on any launch without `-realmname`. Independent of upstream port, bundle into the safe-wins plan. |
 | 7 | `Lua.h` + `Types.h` support headers (calling-convention decision) | `Lua.h` (12809B), `Types.h` (11534B) | **conditional** | ~1 day (decision + spot-port) | Not risky in isolation, but adopting them is a project-wide convention change (`Lua::`-prefixed wrappers) that every subsequent module port (Camera, NamePlates delta, Misc delta) is written against. Decide once: vendor `Lua.h`/`Types.h` and use the wrapper convention going forward, or strip `Lua::` prefixes at each port site. Recommend vendoring — cheaper than repeated manual stripping. |
 | 8 | `Hooks::FrameXML::registerCVar` / `registerLuaLib` signature reconciliation | `Hooks.h`/`Hooks.cpp` (fork's, needs editing) | **conditional** | ~0.5–1 day + regression pass on all 26 existing fork CVars | Shared header every module includes. Safest path: add an overload matching upstream's new signature (optional `flags`/`initCallback`, reordered params) alongside the fork's existing one, rather than changing the existing call sites' behavior. Must re-verify all 26 existing CVar registrations still compile/behave after the header edit. |
-| 9 | Camera module — camera FOV/indirect-visibility fade for occluding models | `Camera.{cpp,h}` (~7.9KB) | **conditional** | ~1–2 days | Two blocking issues: (a) **CVar name collision** — upstream's `Camera::initialize()` registers `showPlayer` and `cameraFov`, both of which the fork **already registers** in `Misc.cpp`; naively adding both would double-register the same CVar names. Must merge into the fork's existing `Misc.cpp` handlers instead of copying the file wholesale, or drop the duplicate registrations and keep only the new `cameraIndirectAlpha`/`cameraIndirectVisibility` pair (which the fork already has as **dead, commented-out** registrations in `Hooks.cpp` — reviving those is the actual net-new work here). (b) 3 `__declspec(naked)` asm hooks at hardcoded addresses (`0x004F90E2` etc., none overlapping the fork's confirmed-compatible `NamePlates.cpp` addresses) — needs verification against the fork's actual target binary before shipping. Depends on item 4 (`unordered_dense`). |
+| 9 | Camera module — camera FOV/indirect-visibility fade for occluding models | `Camera.{cpp,h}` (~7.9KB) | **conditional** | ~1–2 days | Two blocking issues: (a) **CVar name collision** — upstream's `Camera::initialize()` registers `showPlayer` and `cameraFov`, both of which the fork **already registers** in `Misc.cpp`; naively adding both would double-register the same CVar names. Must merge into the fork's existing `Misc.cpp` handlers instead of copying the file wholesale, or drop the duplicate registrations and keep only the new `cameraIndirectAlpha`/`cameraIndirectVisibility` pair (which the fork already has as **dead, commented-out** registrations in `Hooks.cpp` — reviving those is the actual net-new work here). (b) 3 `__declspec(naked)` asm hooks at hardcoded addresses (`IntersectCallFn` at `0x006060E6` with jump-back `0x00606103`, `IterateCollisionListFn` at `0x007A279D`, `IterateWorldObjCollisionListFn` at `0x007A2A1C`; none overlapping the fork's confirmed-compatible `NamePlates.cpp` addresses) — re-verified by re-fetching upstream `Camera.cpp` directly; needs verification against the fork's actual target binary before shipping. Depends on item 4 (`unordered_dense`). |
 | 10 | NamePlates advanced stacking/occlusion/clamp engine (24 new CVars) | `NamePlates.cpp` delta (~24KB of the 53.7KB file) | **conditional** | ~3–5 days | Highest-value port item (this *is* upstream's headline "Improved Nameplate Sorting" feature and the fork's core differentiator). Must be merged into the fork's own already-diverged `NamePlates.cpp` (fork is 30KB vs upstream 53.7KB — not a clean overwrite target; fork has its own CVar set already, e.g. `nameplateXSpace`/`nameplateYSpace`/`nameplateStackFriendly*` with no upstream equivalent, that must be preserved). 4 naked-asm hooks across 16 hardcoded addresses; 3 addresses independently verified identical to the fork's current build (see §3), giving reasonable but not certain confidence the other 13 are address-compatible too — recommend a debug build with address logging/breakpoints before trusting them blind. Depends on items 4 and 8. |
 | 11 | `Misc.cpp` new CVars: `objectHighlightMode`, `portraitResolution` + macro conditionals `cursor`/`playerlocation` | `Misc.cpp` delta (~4.7KB of the 15.6KB file) | **conditional** | ~1–2 days | 11 new hardcoded addresses, all disjoint from the fork's one existing address in this file. The macro-conditional feature hooks `CGGameUI::SecureCmdOptionParseFn` — a client-shared macro-parsing entry point, so verify it doesn't collide with any other macro-conditional patch the fork may add later. Confirmed *not* actually dependent on the D3D module despite a vestigial `#include "D3D.h"` in upstream's file (no D3D9 symbols referenced in the body). Depends on item 8. |
 | 12 | `chatLogSessionKey`/`combatLogSessionKey` CVars (per-launch chat/combat log filenames via CVar-gated pointer patch) | `Misc.cpp` delta | **conditional** | ~0.5 day, folded into item 11's estimate | Distinct mechanism from item 1 (`CombatLog.cpp`'s `CreateFile` hook) — this patches a literal data pointer in the binary (`0x00AC7A40`/`0x00AC7A44`) rather than hooking the file-open call. Both upstream features target the same "isolate logs per session" goal via different mechanisms (chat log path + combat log path pointer patch here, vs. redirecting *any* `WoWCombatLog.txt` open in item 1). Recommend porting item 1 (`CombatLog.cpp`) alone first as the safer of the two combat-log mechanisms, and treating this pointer-patch CVar pair as optional/lower-priority. |
@@ -228,9 +230,12 @@ collisions, shared-hook signature work, hardcoded-address verification, or thoug
 | 17 | `deps/skia` (vendor headers + prebuilt `skia.lib`/`skia.dll`, not built from source) | `deps/skia/` (~475 files, mostly headers under `include/`) | **defer** | part of MSDF-fonts plan | Not a from-source build — upstream ships a prebuilt static lib + a runtime DLL. Lowers build-time cost vs. building Skia from source, but is an opaque prebuilt binary dependency (supply-chain trust, and `skia.dll` must be redistributed alongside `AwesomeWotlkLib.dll`). |
 | 18 | CMake wiring for items 13–17 | `deps/CMakeLists.txt`, `src/AwesomeWotlkLib/CMakeLists.txt` | **defer** | part of MSDF-fonts plan | New `target_include_directories` (`deps/skia/include`, `deps/msdfgen`, build-dir `deps/msdfgen`) and `target_link_libraries` (`msdfgen::msdfgen-core`, `msdfgen::msdfgen-ext`, `freetype`, the literal `deps/skia/skia.lib` path, `ankerl::unordered_dense`). Non-trivial CMake surgery against the fork's current, much simpler lib `CMakeLists.txt`. |
 
-**Counts:** 18 classified entries — **6 safe**, **7 conditional**, **5 defer** (items 13–18 above
-collapse to 5 file-system-level defer entries: D3D, MSDF-family, freetype, msdfgen, skia+CMake
-wiring, counting the CMake wiring together with skia since they're inseparable).
+**Counts:** 18 classified entries — **6 safe**, **6 conditional**, **6 defer**, matching the
+table rows above (items 1–6 safe, 7–12 conditional, 13–18 defer). If item 18 (CMake wiring) is
+counted together with item 17 (skia) rather than as its own line — since the two are
+inseparable in practice, wiring skia's prebuilt lib/include paths is part of vendoring it — the
+defer bucket collapses to 5 file-system-level items: D3D, the MSDF family, freetype, msdfgen,
+and skia+CMake wiring combined. The 18-row/6-6-6 table above is the source of truth.
 
 ## 6. Recommendations for the follow-up plans
 
