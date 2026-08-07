@@ -40,7 +40,8 @@ jobs:
           if (!(Test-Path "$src\AwesomeWotlkPatch.exe")) { throw "Not found: $src\AwesomeWotlkPatch.exe" }
           if (!(Test-Path "$src\AwesomeWotlkLib.dll"))   { throw "Not found: $src\AwesomeWotlkLib.dll" }
 
-          Compress-Archive -Path "$src\AwesomeWotlkPatch.exe","$src\AwesomeWotlkLib.dll" -DestinationPath $zip -Force
+          Copy-Item "${{ github.workspace }}\gameExeLocation.txt" "$src\gameExeLocation.txt" -Force
+          Compress-Archive -Path "$src\AwesomeWotlkPatch.exe","$src\AwesomeWotlkLib.dll","$src\gameExeLocation.txt" -DestinationPath $zip -Force
 
       - name: Package addons folder
         run: |

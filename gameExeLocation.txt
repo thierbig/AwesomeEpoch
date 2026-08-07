@@ -1,0 +1,4 @@
+# Set the path, folder, or filename of your game client executable.
+# Remove the leading '#' on the line below and edit it. Leave it commented to use defaults
+# (Wow.exe, then Project-Epoch.exe, then Ascension.exe), searched next to the tool.
+# Wow.exe
