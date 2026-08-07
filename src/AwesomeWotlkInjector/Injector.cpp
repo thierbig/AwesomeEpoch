@@ -37,19 +37,6 @@ const bool VERBOSE_MODE = GetVerboseMode();
 // Forward declarations
 DWORD GetProcessIdByName(const std::wstring& processName);
 
-// String obfuscation helper
-std::wstring DecryptString(const std::vector<int>& encrypted) {
-    std::wstring result;
-    for (int c : encrypted) {
-        result += static_cast<wchar_t>(c ^ 0x42); // Simple XOR obfuscation
-    }
-    return result;
-}
-
-// Obfuscated strings
-static const std::vector<int> ENCRYPTED_PROCESS_NAME_1 = {0x16, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x20, 0x27, 0x70, 0x6f, 0x63, 0x68, 0x2e, 0x65, 0x78, 0x65}; // "Project Epoch.exe"
-static const std::vector<int> ENCRYPTED_PROCESS_NAME_2 = {0x01, 0x73, 0x63, 0x65, 0x6e, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x65, 0x78, 0x65}; // "ascension.exe"
-static const std::vector<int> ENCRYPTED_DLL_NAME = {0x0b, 0x77, 0x65, 0x73, 0x6f, 0x6d, 0x65, 0x37, 0x6f, 0x74, 0x6c, 0x6b, 0x2c, 0x69, 0x62, 0x2e, 0x64, 0x6c, 0x6c}; // "AwesomeWotlkLib.dll"
 
 // Anti-debugging checks
 bool IsDebuggerAttached() {
@@ -142,11 +129,11 @@ int wmain(int argc, wchar_t* argv[]) {
         return 1;
     }
     
-    // Decrypt obfuscated strings
+    // Fallback client process names, in priority order (base client first).
     std::vector<std::wstring> processNames = {
         L"Wow.exe",
-        DecryptString(ENCRYPTED_PROCESS_NAME_1), // "Project Epoch.exe"
-        DecryptString(ENCRYPTED_PROCESS_NAME_2)  // "ascension.exe"
+        L"Project Epoch.exe",
+        L"ascension.exe"
     };
 
     // A configured gameExeLocation.txt value takes priority; match by filename.
