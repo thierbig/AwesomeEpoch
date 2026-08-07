@@ -48,7 +48,7 @@ static void gluexml_postload()
         Console::SetCVarValue(cvar, realmList, 1, 0, 0, 1);
 
     const char* realmname = getParam("realmname");
-    if (Console::CVar* cvar = Console::FindCVar("realmName"))
+    if (Console::CVar* cvar = Console::FindCVar("realmName"); cvar && realmname)
         Console::SetCVarValue(cvar, realmname, 1, 0, 0, 1);
 
     const char* login = getParam("login");
