@@ -479,11 +479,12 @@ static void OnAttach()
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing NamePlates");
     NamePlates::initialize();
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: NamePlates initialized");
-    // Isolated MSDF/D3D font rendering: attach the D3D9 device detours inside this transaction,
-    // and register the fork-owned MSDFMode CVar (its handler forwards to MSDF::setMode, which
-    // enables the pipeline and attaches the FreeType detour when non-zero).
-    D3D::initialize();
-    Hooks::FrameXML::registerCVar(&s_cvar_MSDFMode, "MSDFMode", NULL, (Console::CVarFlags)1, "1", CVarHandler_MSDFMode);
+    // Isolated MSDF/D3D vector fonts. Registered OFF by default (MSDFMode "0"): the D3D9 + font
+    // hooks are attached lazily by MSDF::setMode only when the user sets MSDFMode >= 1, so a
+    // client whose addresses differ from base 3.3.5a 12340 (e.g. Project Epoch build 12341) is
+    // never touched unless opted in. Enabling it on an incompatible client crashes with
+    // ERROR #134 "Invalid function pointer" at the login screen (the D3D font hooks fire there).
+    Hooks::FrameXML::registerCVar(&s_cvar_MSDFMode, "MSDFMode", NULL, (Console::CVarFlags)1, "0", CVarHandler_MSDFMode);
     // Per-session chat/combat log filename CVars (self-contained pointer patches; registered
     // here rather than via the disabled Misc::initialize()).
     Misc::registerLogSessionCVars();

@@ -5,6 +5,7 @@
 #include "MSDFShaders.h"
 #include "Utils.h"
 #include "Hooks.h"
+#include "D3D.h"
 #include <ranges>
 
 namespace {
@@ -573,8 +574,15 @@ void MSDF::setMode(int mode) {
 	if (mode > MSDF_ENABLED_UNSAFE) mode = MSDF_ENABLED_UNSAFE;
 	g_MSDFMode = static_cast<EMSDFMode>(mode);
 	if (g_MSDFMode != MSDF_DISABLED) {
+		static bool s_hooksAttached = false;
 		DetourTransactionBegin();
 		DetourUpdateThread(GetCurrentThread());
+		if (!s_hooksAttached) {
+			// Attach the D3D9 device hooks lazily, only the first time MSDF is turned on, so the
+			// whole font subsystem stays dormant (and cannot crash) on clients that never enable it.
+			D3D::initialize();
+			s_hooksAttached = true;
+		}
 		Hooks::Detour(&FreeType::InitFn, FreeType_InitHk);
 		DetourTransactionCommit();
 	}
