@@ -33,16 +33,21 @@ jobs:
           $fixedContent = "#include `"../../detours_fix.h`"`n" + $content
           Set-Content "deps\Detours\modules.cpp" $fixedContent
 
-      - name: Configure with CMake (Win32)
+      - name: Configure with CMake (Ninja)
+        # Use Ninja + the MSVC x86 environment from msvc-dev-cmd instead of a pinned
+        # "Visual Studio 17 2022" generator: the windows-latest runner now ships VS18, so the
+        # hardcoded VS17 generator fails with "could not find any instance of Visual Studio".
+        # Ninja is generator-version-agnostic. The root CMakeLists pins runtime output to
+        # build/Release via $<CONFIG>, so the artifact paths below are unchanged.
         run: |
           mkdir build
           cd build
-          cmake .. -G "Visual Studio 17 2022" -A Win32 -DCMAKE_CXX_FLAGS="/DNOWINBASEINTERLOCK /D_WIN32_WINNT=0x0601"
+          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="/DNOWINBASEINTERLOCK /D_WIN32_WINNT=0x0601"
 
       - name: Build DLL and Injector (Release)
         run: |
           cd build
-          cmake --build . --config Release --target AwesomeWotlkLib AwesomeWotlkInjector --parallel
+          cmake --build . --target AwesomeWotlkLib AwesomeWotlkInjector --parallel
 
       - name: Upload DLL and Injector artifacts
         uses: actions/upload-artifact@v4
