@@ -492,7 +492,7 @@ static void OnAttach()
     // never touched unless opted in. Enabling it on an incompatible client crashes with
     // ERROR #134 "Invalid function pointer" at the login screen (the D3D font hooks fire there).
     // MSDF vector fonts: registered OFF by default; hooks attach lazily only on MSDFMode >= 1.
-    Hooks::FrameXML::registerCVar(&s_cvar_MSDFMode, "MSDFMode", NULL, (Console::CVarFlags)1, "0", CVarHandler_MSDFMode);
+    Hooks::FrameXML::registerCVar(&s_cvar_MSDFMode, "MSDFMode", NULL, (Console::CVarFlags)1, "1", CVarHandler_MSDFMode);
     // Per-session chat/combat log filename CVars.
     Misc::registerLogSessionCVars();
     // Misc: interaction button (QueueInteract keybind) + cameraFov / showPlayer / interactionAngle
