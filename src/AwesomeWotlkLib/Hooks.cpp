@@ -223,15 +223,25 @@ static void Lua_OpenFrameXMlApi_bulk()
         func(L);
 }
 
-static void (*Lua_OpenFrameXMLApi_orig)() = (void(*)())0x005120e0;
-static void Lua_OpenFrameXMLApi_hk()
+// Stock (base 3.3.5a 12340 / Project Epoch) FrameXML hooking, matching upstream v37: hook the
+// CALL SITE (0x0051226D) instead of detouring the function, so the client's function-pointer
+// integrity check is not tripped (detouring the function is what caused the ERROR #134 "invalid
+// function pointer" crash on the stock client). The naked stub calls the real OpenFrameXMLApi
+// (0x00530F60), then registers our custom Lua libs. (Our previous 0x005120e0 was the OLD-Epoch
+// site address from someweirdhuman PR #34 — wrong on the current stock client.)
+static void (*Lua_OpenFrameXMLApi_site)() = (void(*)())0x0051226D;
+static void __declspec(naked) Lua_OpenFrameXMLApi_hk()
 {
-    Lua_OpenFrameXMLApi_orig();
-    Lua_OpenFrameXMlApi_bulk();
-    // Ensure CVars when FrameXML API is ready (CVar system should be initialized by now)
-    EVASION_LOG_SUCCESS("CVARS", "Lua_OpenFrameXMLApi_hk: Ensuring custom CVars are registered");
-    Hooks::ensureCustomCVarsRegistered();
-    EVASION_LOG_SUCCESS("FRAMEXML", std::string("Lua_OpenFrameXMLApi_hk: custom libs=") + std::to_string(s_customLuaLibs.size()));
+    __asm {
+        mov eax, 0x00530F60;
+        call eax;
+        pushad;
+        pushfd;
+        call Lua_OpenFrameXMlApi_bulk;
+        popfd;
+        popad;
+        ret;
+    }
 }
 
 struct CustomTokenDetails {
@@ -776,7 +786,7 @@ void Hooks::initialize()
     DetourAttach(&(LPVOID&)CGGameUI__EnterWorld, OnEnterWorld);
     DetourAttach(&(LPVOID&)CGGameUI__LeaveWorld, OnLeaveWorld);
     DetourAttach(&(LPVOID&)FrameScript_FillEvents_orig, FrameScript_FillEvents_hk);
-    DetourAttach(&(LPVOID&)Lua_OpenFrameXMLApi_orig, Lua_OpenFrameXMLApi_hk);
+    DetourAttach(&(LPVOID&)Lua_OpenFrameXMLApi_site, Lua_OpenFrameXMLApi_hk);
     DetourAttach(&(LPVOID&)GetGuidByKeyword_orig, GetGuidByKeyword_hk);
     DetourAttach(&(LPVOID&)GetKeywordsByGuid_orig, GetKeywordsByGuid_hk);
     // DetourAttach(&(LPVOID&)LoadGlueXML_orig, LoadGlueXML_hk);

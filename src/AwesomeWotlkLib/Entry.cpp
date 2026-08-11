@@ -468,6 +468,13 @@ static int CVarHandler_MSDFMode(Console::CVar*, const char*, const char* value, 
 static void OnAttach()
 {
     // Set up basic hooks only - no world detection needed
+    // Stock-client (base 3.3.5a 12340 / Project Epoch) bypass for the "invalid function pointer"
+    // integrity check, plus TOS/EULA auto-accept. From upstream v37; someweirdhuman PR #34 dropped
+    // these for the OLD-Epoch (modified) client, but the current stock client needs them.
+    *(DWORD*)0x00D415B8 = 1;
+    *(DWORD*)0x00D415BC = 0x7FFFFFFF;
+    *(DWORD*)0x00B6AF54 = 1; // TOSAccepted
+    *(DWORD*)0x00B6AF5C = 1; // EULAAccepted
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: DetourTransactionBegin");
     DetourTransactionBegin();
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: DetourUpdateThread(GetCurrentThread())");
@@ -484,13 +491,12 @@ static void OnAttach()
     // client whose addresses differ from base 3.3.5a 12340 (e.g. Project Epoch build 12341) is
     // never touched unless opted in. Enabling it on an incompatible client crashes with
     // ERROR #134 "Invalid function pointer" at the login screen (the D3D font hooks fire there).
+    // MSDF vector fonts: registered OFF by default; hooks attach lazily only on MSDFMode >= 1.
     Hooks::FrameXML::registerCVar(&s_cvar_MSDFMode, "MSDFMode", NULL, (Console::CVarFlags)1, "0", CVarHandler_MSDFMode);
-    // Per-session chat/combat log filename CVars (self-contained pointer patches; registered
-    // here rather than via the disabled Misc::initialize()).
+    // Per-session chat/combat log filename CVars.
     Misc::registerLogSessionCVars();
-    // Misc: interaction button (QueueInteract keybind) + cameraFov / showPlayer /
-    // interactionAngle / interactionMode CVars + the misc Lua API. Only registers CVars/Lua/
-    // enter-world callbacks (its camera detour stays disabled), so it is safe in this transaction.
+    // Misc: interaction button (QueueInteract keybind) + cameraFov / showPlayer / interactionAngle
+    // / interactionMode CVars + the misc Lua API.
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing Misc (interaction + camera/showPlayer CVars)");
     Misc::initialize();
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Misc initialized");
