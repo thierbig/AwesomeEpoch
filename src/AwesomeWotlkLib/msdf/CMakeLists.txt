@@ -29,13 +29,15 @@ target_include_directories(AwesomeMSDF PRIVATE
 target_compile_options(AwesomeMSDF PRIVATE /EHsc)
 
 # The DLL-wide flags pin _WIN32_WINNT=0x0601 (Win7) for the injector/Detours, but the MSDF
-# manager calls Windows 10 APIs (VirtualAlloc2 / MapViewOfFile3 / UnmapViewOfFile2), guarded at
-# runtime via GetProcAddress. Raise the SDK target for this library only so they are declared.
-# These must be compile *options* (not definitions) so they land after the DLL-wide
-# /D_WIN32_WINNT=0x0601 in the command line and win; /U first avoids a redefinition warning.
+# manager calls Windows 10 APIs (VirtualAlloc2 / MapViewOfFile3 / UnmapViewOfFile2, guarded at
+# runtime via GetProcAddress). Raise the SDK target for this library only: /U removes the Win7
+# pins, then /D re-sets them. NTDDI_VERSION must be >= NTDDI_WIN10_RS4 (0x0A000005) because newer
+# Windows SDKs (e.g. 10.0.26100 on CI) gate VirtualAlloc2/MapViewOfFile3 on NTDDI, not just
+# _WIN32_WINNT; use RS5 (0x0A000006) for margin. These are compile *options* (not definitions) so
+# they land after the DLL-wide defines and win.
 target_compile_options(AwesomeMSDF PRIVATE
     /U_WIN32_WINNT /UWINVER /UNTDDI_VERSION
-    /D_WIN32_WINNT=0x0A00 /DWINVER=0x0A00 /DNTDDI_VERSION=0x0A000000
+    /D_WIN32_WINNT=0x0A00 /DWINVER=0x0A00 /DNTDDI_VERSION=0x0A000006
 )
 
 # PUBLIC so these propagate to the AwesomeWotlkLib DLL that links this static library.
