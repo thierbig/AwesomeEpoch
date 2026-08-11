@@ -487,9 +487,12 @@ static void OnAttach()
     // Per-session chat/combat log filename CVars (self-contained pointer patches; registered
     // here rather than via the disabled Misc::initialize()).
     Misc::registerLogSessionCVars();
-    // EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing Misc (disabled: not required for NamePlate API)");
-    //Misc::initialize();
-    // EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Misc initialized");
+    // Misc: interaction button (QueueInteract keybind) + cameraFov / showPlayer /
+    // interactionAngle / interactionMode CVars + the misc Lua API. Only registers CVars/Lua/
+    // enter-world callbacks (its camera detour stays disabled), so it is safe in this transaction.
+    EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing Misc (interaction + camera/showPlayer CVars)");
+    Misc::initialize();
+    EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Misc initialized");
     
     {
         LONG detErr = DetourTransactionCommit();
