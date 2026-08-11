@@ -44,10 +44,10 @@ jobs:
           cd build
           cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="/DNOWINBASEINTERLOCK /D_WIN32_WINNT=0x0601"
 
-      - name: Build DLL and Injector (Release)
+      - name: Build DLL, Injector and Launcher (Release)
         run: |
           cd build
-          cmake --build . --target AwesomeWotlkLib AwesomeWotlkInjector --parallel
+          cmake --build . --target AwesomeWotlkLib AwesomeWotlkInjector AwesomeEpochLauncher --parallel
 
       - name: Upload DLL and Injector artifacts
         uses: actions/upload-artifact@v4
