@@ -114,8 +114,8 @@ static int CVarHandler_NameplateDistance(Console::CVar*, const char*, const char
 {
     float f = (float)atof(value);
     if (!(f > 0.f)) f = 41.f;   // invalid / non-positive -> base-client default
-    if (f < 41.f)  f = 41.f;    // clamp to sane base-client range
-    if (f > 100.f) f = 100.f;
+    if (f < 41.f)  f = 41.f;    // clamp to the base-client minimum
+    if (f > 200.f) f = 200.f;   // upper bound matches the AwesomeEpochManager slider (was 100)
     *(float*)0x00ADAA7C = f * f; // squared view distance, base 3.3.5a 12340
     return 1;
 }
