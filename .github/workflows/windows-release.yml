@@ -4,54 +4,61 @@ on:
   push:
     tags:
       - "*"
-
-env:
-  BUILD_TYPE: Release
+  workflow_dispatch:
 
 jobs:
   build-windows-win32-release:
     runs-on: windows-latest
     permissions:
-      contents: write 
+      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v2
+      - name: Setup MSVC (x86)
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
 
-      - name: Configure CMake
+      - name: Fix Detours Interlocked Functions
+        shell: pwsh
+        run: |
+          "#define NOWINBASEINTERLOCK`n#include <intrin.h>`n#pragma intrinsic(_InterlockedExchangeAdd)`n#pragma intrinsic(_InterlockedCompareExchange)`n#pragma intrinsic(_InterlockedCompareExchange64)" | Set-Content detours_fix.h
+          $content = Get-Content "deps\Detours\modules.cpp" -Raw
+          if ($content -notmatch [regex]::Escape('../../detours_fix.h')) {
+            Set-Content "deps\Detours\modules.cpp" ("#include `"../../detours_fix.h`"`n" + $content)
+          }
+
+      # Ninja + the MSVC x86 environment from msvc-dev-cmd, not a pinned "Visual Studio 17 2022"
+      # generator: windows-latest now ships VS18, so the hardcoded VS17 generator fails at
+      # configure. The flags drop /EHsc (so Entry.cpp's __try compiles) and set the Detours fix.
+      - name: Configure (Ninja)
         run: >
           cmake -S "${{ github.workspace }}"
           -B "${{ github.workspace }}\build"
-          -G "Visual Studio 17 2022"
-          -A Win32
-          -T host=x64
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_CXX_FLAGS="/DNOWINBASEINTERLOCK /D_WIN32_WINNT=0x0601"
 
-      - name: Build
-        run: cmake --build "${{ github.workspace }}\build" --config ${{ env.BUILD_TYPE }} -- /m
+      - name: Build (injection set)
+        run: cmake --build "${{ github.workspace }}\build" --target AwesomeWotlkLib AwesomeWotlkInjector AwesomeEpochLauncher --parallel
 
-      - name: Package artifact (exe + dll only, tag-based name)
+      - name: Package AwesomeEpoch.zip + Addons.zip
+        shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path "${{ github.workspace }}\dist" | Out-Null
-          $src = "${{ github.workspace }}\build\Release"
-          $tag = "${{ github.ref_name }}"
-          $zip = "${{ github.workspace }}\dist\AwesomeWotLK_$tag.zip"
-
-          if (!(Test-Path "$src\AwesomeWotlkPatch.exe")) { throw "Not found: $src\AwesomeWotlkPatch.exe" }
-          if (!(Test-Path "$src\AwesomeWotlkLib.dll"))   { throw "Not found: $src\AwesomeWotlkLib.dll" }
-          if (!(Test-Path "$src\skia.dll"))              { throw "Not found: $src\skia.dll (MSDF runtime dependency; AwesomeWotlkLib post-build should copy it)" }
-
-          Copy-Item "${{ github.workspace }}\gameExeLocation.txt" "$src\gameExeLocation.txt" -Force
-          Compress-Archive -Path "$src\AwesomeWotlkPatch.exe","$src\AwesomeWotlkLib.dll","$src\skia.dll","$src\gameExeLocation.txt" -DestinationPath $zip -Force
-
-      - name: Package addons folder
-        run: |
-          $tag = "${{ github.ref_name }}"
-          $addonsPath = "${{ github.workspace }}\addons"
-          if (!(Test-Path $addonsPath)) { throw "Not found: $addonsPath" }
-
-          $addonsZip = "${{ github.workspace }}\dist\addons_$tag.zip"
-          Compress-Archive -Path "$addonsPath" -DestinationPath $addonsZip -Force
+          $ws = "${{ github.workspace }}"
+          $src = "$ws\build\Release"
+          $stage = "$ws\dist\AwesomeEpoch"
+          New-Item -ItemType Directory -Force -Path "$stage\Fonts_AwesomeWotLK" | Out-Null
+          foreach ($f in "AwesomeEpoch.exe","AwesomeWotlkInjector.exe","AwesomeWotlkLib.dll","skia.dll") {
+            if (!(Test-Path "$src\$f")) { throw "Not found: $src\$f" }
+            Copy-Item "$src\$f" "$stage\$f" -Force
+          }
+          Copy-Item "$ws\gameExeLocation.txt" "$stage\gameExeLocation.txt" -Force
+          "Put custom .ttf/.otf fonts here for the MSDF vector-font pipeline (MSDFMode)." | Set-Content "$stage\Fonts_AwesomeWotLK\README.txt"
+          Compress-Archive -Path "$stage" -DestinationPath "$ws\dist\AwesomeEpoch.zip" -Force
+          Compress-Archive -Path "$ws\addons\AwesomeEpochManager","$ws\addons\Flash" -DestinationPath "$ws\dist\Addons.zip" -Force
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
