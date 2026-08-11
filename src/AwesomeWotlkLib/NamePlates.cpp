@@ -112,9 +112,11 @@ int getTokenId(guid_t guid)
 
 static int CVarHandler_NameplateDistance(Console::CVar*, const char*, const char* value, LPVOID)
 {
-    //double f = atof(value);
-    //f = f > 0.f ? f : 41.f;
-    //*(float*)0x00ADAA7C = (float)(f * f);
+    float f = (float)atof(value);
+    if (!(f > 0.f)) f = 41.f;   // invalid / non-positive -> base-client default
+    if (f < 41.f)  f = 41.f;    // clamp to the base-client minimum
+    if (f > 200.f) f = 200.f;   // upper bound matches the AwesomeEpochManager slider (was 100)
+    *(float*)0x00ADAA7C = f * f; // squared view distance, base 3.3.5a 12340
     return 1;
 }
 std::chrono::steady_clock::time_point gLastCallTime = std::chrono::steady_clock::now();
@@ -688,7 +690,7 @@ void NamePlates::initialize()
     Hooks::FrameXML::registerEvent(NAME_PLATE_UNIT_ADDED);
     Hooks::FrameXML::registerEvent(NAME_PLATE_UNIT_REMOVED);
     Hooks::FrameXML::registerEvent(NAME_PLATE_OWNER_CHANGED);
-    Hooks::FrameXML::registerCVar(&s_cvar_nameplateDistance, "nameplateDistance", NULL, (Console::CVarFlags)1, "43", CVarHandler_NameplateDistance);
+    Hooks::FrameXML::registerCVar(&s_cvar_nameplateDistance, "nameplateDistance", NULL, (Console::CVarFlags)1, "41", CVarHandler_NameplateDistance);
     Hooks::FrameXML::registerCVar(&s_cvar_nameplateStacking, "nameplateStacking", NULL, (Console::CVarFlags)1, "0", CVarHandler_NameplateStacking);
     Hooks::FrameXML::registerCVar(&s_cvar_nameplateXSpace, "nameplateXSpace", NULL, (Console::CVarFlags)1, "130", CVarHandler_NameplateXSpace);
     Hooks::FrameXML::registerCVar(&s_cvar_nameplateYSpace, "nameplateYSpace", NULL, (Console::CVarFlags)1, "20", CVarHandler_NameplateYSpace);

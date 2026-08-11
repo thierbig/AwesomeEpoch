@@ -4,9 +4,73 @@
 #include "Utils.h"
 #include <Windows.h>
 #include <Detours/detours.h>
+#include <string>
+#include <cstdio>
+#include <cstdlib>
 #define M_PI           3.14159265358979323846
 #undef min
 #undef max
+
+// --- Per-session chat/combat log filenames (ported from upstream awesome_wotlk, gap item 12) ---
+// Each launch writes to a timestamped Logs\<stamp> WoWChatLog.txt / WoWCombatLog.txt instead of
+// overwriting the single default file. Implemented by repointing the client's log-path pointers
+// (0x00AC7A40 chat, 0x00AC7A44 combat) to our buffers, or back to the client defaults
+// (0x009FA4E4 / 0x009FA4CC) when disabled. Addresses are for the base 3.3.5a (12340) client and
+// must be verified in-game.
+static int  s_chatLogSessionKey = 1;
+static int  s_combatLogSessionKey = 1;
+static char s_customChatLogPath[MAX_PATH];
+static char s_customCombatLogPath[MAX_PATH];
+static Console::CVar* s_cvar_chatLogSessionKey;
+static Console::CVar* s_cvar_combatLogSessionKey;
+
+static const char* logSessionStamp()
+{
+    static const std::string stamp = [] {
+        char s[40] = { 0 };
+        SYSTEMTIME t;
+        GetLocalTime(&t);
+        std::sprintf(s, "%04d-%02d-%02d-%02d.%02d.%02d ", t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
+        return std::string(s);
+    }();
+    return stamp.c_str();
+}
+
+static int CVarHandler_chatLogSessionKey(Console::CVar*, const char*, const char* value, void*)
+{
+    s_chatLogSessionKey = (std::atoi(value) != 0) ? 1 : 0;
+    DWORD oldProtect;
+    VirtualProtect(reinterpret_cast<void*>(0x00AC7A40), 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+    if (s_chatLogSessionKey) {
+        std::sprintf(s_customChatLogPath, "Logs\\%sWoWChatLog.txt", logSessionStamp());
+        *reinterpret_cast<const char**>(0x00AC7A40) = s_customChatLogPath;
+    } else {
+        *reinterpret_cast<const char**>(0x00AC7A40) = reinterpret_cast<const char*>(0x009FA4E4);
+    }
+    VirtualProtect(reinterpret_cast<void*>(0x00AC7A40), 4, oldProtect, &oldProtect);
+    return 1;
+}
+
+static int CVarHandler_combatLogSessionKey(Console::CVar*, const char*, const char* value, void*)
+{
+    s_combatLogSessionKey = (std::atoi(value) != 0) ? 1 : 0;
+    DWORD oldProtect;
+    VirtualProtect(reinterpret_cast<void*>(0x00AC7A44), 4, PAGE_EXECUTE_READWRITE, &oldProtect);
+    if (s_combatLogSessionKey) {
+        std::sprintf(s_customCombatLogPath, "Logs\\%sWoWCombatLog.txt", logSessionStamp());
+        *reinterpret_cast<const char**>(0x00AC7A44) = s_customCombatLogPath;
+    } else {
+        *reinterpret_cast<const char**>(0x00AC7A44) = reinterpret_cast<const char*>(0x009FA4CC);
+    }
+    VirtualProtect(reinterpret_cast<void*>(0x00AC7A44), 4, oldProtect, &oldProtect);
+    return 1;
+}
+
+void Misc::registerLogSessionCVars()
+{
+    Hooks::FrameXML::registerCVar(&s_cvar_chatLogSessionKey, "chatLogSessionKey", NULL, (Console::CVarFlags)1, "1", CVarHandler_chatLogSessionKey);
+    Hooks::FrameXML::registerCVar(&s_cvar_combatLogSessionKey, "combatLogSessionKey", NULL, (Console::CVarFlags)1, "1", CVarHandler_combatLogSessionKey);
+}
 
 static Console::CVar* s_cvar_interactionMode;
 static Console::CVar* s_cvar_interactionAngle;

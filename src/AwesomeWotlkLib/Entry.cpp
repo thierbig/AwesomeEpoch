@@ -19,6 +19,8 @@
 #include <random>
 #include <vector>
 #include <cwchar>
+#include <cstdlib>
+#include "MSDFBridge.h"
 
 // Forward declarations
 static void OnRealAttach();
@@ -454,9 +456,25 @@ static void OnRealAttach()
     }
 }
 
+// MSDFMode CVar is owned by the fork (fork Hooks/CVar types) and forwards its parsed value to
+// the isolated MSDF library. 0 = disabled, 1 = enabled, 2 = enabled-unsafe.
+static Console::CVar* s_cvar_MSDFMode = nullptr;
+static int CVarHandler_MSDFMode(Console::CVar*, const char*, const char* value, LPVOID)
+{
+    MSDF::setMode(value ? atoi(value) : 1);
+    return 1;
+}
+
 static void OnAttach()
 {
     // Set up basic hooks only - no world detection needed
+    // Stock-client (base 3.3.5a 12340 / Project Epoch) bypass for the "invalid function pointer"
+    // integrity check, plus TOS/EULA auto-accept. From upstream v37; someweirdhuman PR #34 dropped
+    // these for the OLD-Epoch (modified) client, but the current stock client needs them.
+    *(DWORD*)0x00D415B8 = 1;
+    *(DWORD*)0x00D415BC = 0x7FFFFFFF;
+    *(DWORD*)0x00B6AF54 = 1; // TOSAccepted
+    *(DWORD*)0x00B6AF5C = 1; // EULAAccepted
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: DetourTransactionBegin");
     DetourTransactionBegin();
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: DetourUpdateThread(GetCurrentThread())");
@@ -468,9 +486,20 @@ static void OnAttach()
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing NamePlates");
     NamePlates::initialize();
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: NamePlates initialized");
-    // EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing Misc (disabled: not required for NamePlate API)");
-    //Misc::initialize();
-    // EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Misc initialized");
+    // Isolated MSDF/D3D vector fonts. Registered OFF by default (MSDFMode "0"): the D3D9 + font
+    // hooks are attached lazily by MSDF::setMode only when the user sets MSDFMode >= 1, so a
+    // client whose addresses differ from base 3.3.5a 12340 (e.g. Project Epoch build 12341) is
+    // never touched unless opted in. Enabling it on an incompatible client crashes with
+    // ERROR #134 "Invalid function pointer" at the login screen (the D3D font hooks fire there).
+    // MSDF vector fonts: registered OFF by default; hooks attach lazily only on MSDFMode >= 1.
+    Hooks::FrameXML::registerCVar(&s_cvar_MSDFMode, "MSDFMode", NULL, (Console::CVarFlags)1, "1", CVarHandler_MSDFMode);
+    // Per-session chat/combat log filename CVars.
+    Misc::registerLogSessionCVars();
+    // Misc: interaction button (QueueInteract keybind) + cameraFov / showPlayer / interactionAngle
+    // / interactionMode CVars + the misc Lua API.
+    EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing Misc (interaction + camera/showPlayer CVars)");
+    Misc::initialize();
+    EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Misc initialized");
     
     {
         LONG detErr = DetourTransactionCommit();

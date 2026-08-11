@@ -72,7 +72,7 @@ local CVARS = {
         { name = "nameplateXSpace", label = L.CVAR_LABEL_X_SPACE, type = "slider", min = 5, max = 200, step = 1, default = 10, persist = true },
         { name = "nameplateYSpace", label = L.CVAR_LABEL_Y_SPACE, type = "slider", min = 5, max = 75, step = 1, default = 15, persist = true },
         { name = "nameplateUpperBorder", label = L.CVAR_LABEL_UPPER_BORDER, type = "slider", min = 0, max = 100, step = 1, default = 50, persist = true },
-        { name = "nameplateOriginPos", label = L.CVAR_LABEL_ORIGIN_POS, type = "slider", min = 0, max = 60, step = 1, default = 30, persist = true },
+        { name = "nameplateOriginPos", label = L.CVAR_LABEL_ORIGIN_POS, type = "slider", min = 0, max = 60, step = 1, default = 0, persist = true },
         { name = "nameplateSpeedRaise", label = L.CVAR_LABEL_SPEED_RAISE, type = "slider", min = 0, max = 5, step = 0.1, default = 1.0, persist = true },
         { name = "nameplateSpeedReset", label = L.CVAR_LABEL_SPEED_RESET, type = "slider", min = 0, max = 5, step = 0.1, default = 1.0, persist = true },
         { name = "nameplateSpeedLower", label = L.CVAR_LABEL_SPEED_LOWER, type = "slider", min = 0, max = 5, step = 0.1, default = 1.0, persist = true },

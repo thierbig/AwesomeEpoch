@@ -6,6 +6,11 @@
 #include <iostream>
 #include <span>
 #include <string>
+#include "../Common/GameExeConfig.h"
+#include <algorithm>
+#include <cctype>
+#include <cstring>
+#include <vector>
 #define AWESOMEWOTLKLIB_DLL "AwesomeWotlkLib.dll"
 
 static std::string s_appName;
@@ -13,10 +18,26 @@ static bool s_quietMode = false;
 
 const char* findGameClientExecutable()
 {
-    static const char* possibleNames[] = { "Ascension.exe", "Project-Epoch.exe", "Wow.exe" };
-    for (const char* name : possibleNames)
-        if (std::filesystem::is_regular_file(name))
-            return name;
+    // Config-derived candidates first, then built-in defaults.
+    static std::vector<std::string> candidates;
+    candidates.clear();
+
+    const std::string cfg = GameExeConfig::readConfiguredValue();
+    if (!cfg.empty()) {
+        std::error_code ec;
+        if (std::filesystem::is_directory(cfg, ec)) {
+            for (const char* name : GameExeConfig::defaultNames())
+                candidates.push_back((std::filesystem::path(cfg) / name).string());
+        } else {
+            candidates.push_back(cfg); // full path or bare filename
+        }
+    }
+    for (const char* name : GameExeConfig::defaultNames())
+        candidates.push_back(name);
+
+    for (const std::string& c : candidates)
+        if (std::filesystem::is_regular_file(c))
+            return _strdup(c.c_str()); // caller uses it read-only for process lifetime
     return NULL;
 }
 
@@ -27,7 +48,10 @@ bool applyPatches(const char* path)
 
     std::span<const PatchDetails> patches = s_patches;
 
-    if (!strcmp(path, "Ascension.exe")) {
+    std::string base = GameExeConfig::basename(path);
+    std::transform(base.begin(), base.end(), base.begin(),
+        [](unsigned char c) { return (char)std::tolower(c); });
+    if (base == "ascension.exe") {
         patches = s_patches_ascension;
     }
 
@@ -98,6 +122,15 @@ int main(int argc, char** argv)
     if (!std::filesystem::is_regular_file(libInGamePath) && std::filesystem::is_regular_file(libInAppPath)) {
         std::error_code ec;
         std::filesystem::copy_file(libInAppPath, libInGamePath, ec);
+    }
+
+    // MSDF runtime dependency: AwesomeWotlkLib.dll links skia.dll, so it must sit in the game
+    // folder too. Copy it next to the library if it's shipped alongside the patcher.
+    std::filesystem::path skiaInGamePath = std::filesystem::path(exePath).parent_path() / "skia.dll";
+    std::filesystem::path skiaInAppPath = std::filesystem::absolute(argv[0]).parent_path() / "skia.dll";
+    if (!std::filesystem::is_regular_file(skiaInGamePath) && std::filesystem::is_regular_file(skiaInAppPath)) {
+        std::error_code ec;
+        std::filesystem::copy_file(skiaInAppPath, skiaInGamePath, ec);
     }
 
     if (std::filesystem::is_regular_file(libInGamePath)) {
