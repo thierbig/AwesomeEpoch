@@ -128,8 +128,9 @@ int __cdecl Spell_OnCastHook(int spellId, int a2, int a3, int a4, int a5)
     return success;
 }
 
-// Attach the cast detour only while the patch is on. Upstream v37 does the same, and it matches
-// this fork's MSDF convention: an opt-in hook must not touch the client until the user asks for it.
+// Keep the detours installed only while the patch is on, so `enableStancePatch 0` really does
+// restore stock behaviour rather than just going quiet. The patch ships on, and initialize()
+// attaches -- see the note there for why that is not left to this handler.
 static int CVarHandler_enableStancePatch(Console::CVar*, const char*, const char* value, LPVOID)
 {
     const bool wanted = (std::atoi(value) == 1);
@@ -167,6 +168,16 @@ static int lua_openmisclib(lua_State* L)
 void Spell::initialize()
 {
     Hooks::FrameXML::registerLuaLib(lua_openmisclib);
-    Hooks::FrameXML::registerCVar(&s_cvar_enableStancePatch, "enableStancePatch", NULL, (Console::CVarFlags)1, "0", CVarHandler_enableStancePatch);
-    // No DetourAttach here: the cast hook is installed lazily by CVarHandler_enableStancePatch.
+    Hooks::FrameXML::registerCVar(&s_cvar_enableStancePatch, "enableStancePatch", NULL, (Console::CVarFlags)1, "1", CVarHandler_enableStancePatch);
+
+    // Ships enabled, so attach here instead of leaving it to CVarHandler_enableStancePatch: the
+    // client does not reliably invoke a CVar's handler for its *initial* value, and depending on
+    // that would leave enableStancePatch reading 1 with no detour installed -- the feature would
+    // look on and do nothing until it was toggled. Registering while already attached is safe: the
+    // handler's `wanted == s_stancePatchAttached` check makes a registration-time call a no-op, and
+    // `enableStancePatch 0` still detaches both hooks properly.
+    DetourAttach(&(LPVOID&)Spell_OnCastOriginal, Spell_OnCastHook);
+    DetourAttach(&(LPVOID&)GetShapeshiftForm_orig, GetShapeshiftForm_hk);
+    s_stancePatchEnabled = true;
+    s_stancePatchAttached = true;
 }
