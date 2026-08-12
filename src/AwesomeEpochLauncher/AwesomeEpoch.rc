@@ -1,0 +1,6 @@
+// Application icon for AwesomeEpoch.exe.
+//
+// Lifted from the original batch-compiled launcher so the native one keeps the icon users
+// already see on their desktop shortcut. Explorer shows the lowest-numbered ICON resource,
+// hence the id of 1.
+1 ICON "AwesomeEpoch.ico"
