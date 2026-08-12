@@ -10,7 +10,7 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
   - Display castbars over enemy nameplates for improved situational awareness.
 - **Custom Game Path**: Set a custom path, folder, or filename for the client executable (defaults to `Wow.exe`) via `gameExeLocation.txt`, even if it’s outside default locations (e.g., Program Files, C:\Games).
 - **Manual Injection Option**: Run the injector directly with a simple command for users who prefer manual control.
-- **MSDF Vector Fonts**: Crisp, vector-based (MSDF) text rendering ported from upstream `awesome_wotlk`, controlled by the `MSDFMode` CVar (`0` = off, `1` = on, `2` = on incl. unsafe fonts). Requires `skia.dll`, which ships in the release and must sit in the game folder next to `AwesomeWotlkLib.dll` (the patcher copies it automatically).
+- **MSDF Vector Fonts**: Crisp, vector-based (MSDF) text rendering ported from upstream `awesome_wotlk`, controlled by the `MSDFMode` CVar (`0` = off, `1` = on, `2` = on incl. unsafe fonts). Requires `skia.dll`, which ships in the release and loads alongside `AwesomeWotlkLib.dll` (keep both in the release folder).
 - **Additional QoL Features**: Various enhancements to improve gameplay.
 
 ## Prerequisites
@@ -39,22 +39,21 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
    - Leave it commented (or delete the file) to use the default search order: `Wow.exe`, then `Project-Epoch.exe`, then `Ascension.exe`.
 
 ## Usage
-### Patching (Default)
-The main release zip ships `AwesomeWotlkPatch.exe`, `AwesomeWotlkLib.dll`, and `gameExeLocation.txt`, so this is the flow that works right out of the downloaded release with no extra steps.
-1. Open a Command Prompt as administrator and navigate to the release folder:
-   ```
-   cd C:\Users\YourName\AwesomeEpoch
-   ```
-2. Run the patcher:
-   ```
-   AwesomeWotlkPatch.exe
-   ```
-   `AwesomeWotlkPatch.exe` reads `gameExeLocation.txt` (in the folder it runs from) to locate the client executable and patches it directly. The value can be a full path, just a folder, or a bare filename, and defaults to `Wow.exe` if left unset.
+AwesomeEpoch works by **injection** — the DLL is loaded into your running client. The default way is a single double-click; a manual command-prompt version is there if you want it.
 
-### Injection (Alternative / Advanced)
-Instead of patching the executable, you can inject the CVar settings into a client that's already running, using `AwesomeWotlkInjector.exe`. Note: **the injector is not included in the main release zip** — it's built separately by the `build-injector.yml` workflow, so you'll need to grab it from that workflow's build artifacts if you want to use this method.
+### Double-Click (Default)
+Once your client is configured, this is the whole flow:
+
+1. (First time only) Point `gameExeLocation.txt` at your client — see **Set Custom Game Path** above. Leave it as-is to use the default search order (`Wow.exe`, then `Project-Epoch.exe`, then `Ascension.exe`).
+2. **Double-click `AwesomeEpoch.exe`.** (If injection fails, right-click → *Run as administrator*.)
+
+That's it. The launcher starts your client if it isn't already running, waits for it to load, and injects `AwesomeWotlkLib.dll` — no command line, no manual steps. It writes an `AutoInject_Awesome.log` next to itself if you need to check what happened.
+
+### Manual Injection (Advanced)
+Same injection, driven by hand instead of the launcher — handy if you start the client through some other launcher and just want to inject into it.
+
 1. Start the game client yourself (via its launcher, or by running the exe directly) and let it fully load.
-2. Open a Command Prompt as administrator and navigate to the folder containing `AwesomeWotlkInjector.exe`:
+2. Open a Command Prompt as administrator and navigate to the release folder:
    ```
    cd C:\Users\YourName\AwesomeEpoch
    ```
@@ -62,7 +61,7 @@ Instead of patching the executable, you can inject the CVar settings into a clie
    ```
    AwesomeWotlkInjector.exe
    ```
-   `AwesomeWotlkInjector.exe` reads `gameExeLocation.txt` (in the folder it runs from) to find the running client process and injects the CVar settings into it.
+   `AwesomeWotlkInjector.exe` reads `gameExeLocation.txt` (in the folder it runs from) to find the running client process and injects the CVar features into it.
 
 ### Interaction Button for handheld console
 <img width="930" height="102" alt="image" src="https://github.com/user-attachments/assets/cdd0fc44-e796-4891-a722-1f5f1932e25d" />
@@ -78,15 +77,16 @@ To enable castbars over all enemy nameplates, you need to install [PlateCastBarF
 ## Troubleshooting
 - **Injection not working**:
   - Ensure `gameExeLocation.txt` contains a valid path to your game client executable or its folder, or leave it commented for default paths.
-  - Run `AwesomeWotlkInjector.exe` or `AwesomeWotlkPatch.exe` as administrator.
+  - Run `AwesomeEpoch.exe` (or `AwesomeWotlkInjector.exe`) as administrator.
+  - Check `AutoInject_Awesome.log` in the release folder for what the launcher tried and where it failed.
 - **Injection fails**:
-  - Verify the game client is running before injecting.
-  - Check if `AwesomeWotlkInjector.exe` is in the release folder or the `AwesomeWotlkInjector` subfolder.
+  - For manual injection, verify the game client is running before injecting.
+  - Make sure `AwesomeWotlkLib.dll` and `skia.dll` are in the same folder as `AwesomeEpoch.exe`.
   - Ensure you have the required addons (`AwesomeEpochManager`, `Flash`, `WeakAuras`).
   
 
 ## Notes
-- **Run as Administrator**: Always run `AwesomeWotlkInjector.exe` or `AwesomeWotlkPatch.exe` with administrator privileges to avoid permission issues.
+- **Run as Administrator**: Always run `AwesomeEpoch.exe` (or `AwesomeWotlkInjector.exe`) with administrator privileges to avoid permission issues.
 - **Support**: For issues or feature requests, create an issue on the [GitHub Issues](https://github.com/thierbig/AwesomeEpoch/issues) page.
 
 ## Credits
