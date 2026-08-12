@@ -14,6 +14,8 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
 - **Additional QoL Features**: Various enhancements to improve gameplay.
 
 ## Prerequisites
+Move the file **skia.dll** into the game client's folder next to other .dlls.
+
 - The base **World of Warcraft 3.3.5a** client installed, with `Wow.exe` accessible (the tool also supports `Project-Epoch.exe` or `Ascension.exe` if that's what your install uses — see **Custom Game Path** below).
 - **Addons** (required for full functionality):
   - **AwesomeEpochManager**: Enables custom CVar settings for modern features. (download below)
@@ -32,7 +34,6 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
    - Download [PlateCastBarFixed](https://github.com/thierbig/PlateCastBar-3.3.5-Fixed/archive/refs/heads/main.zip)
    - (Optional) Download [WeakAuras](https://github.com/NoM0Re/WeakAuras-WotLK/archive/refs/heads/master.zip)
    - Place the addons in your game client's `Interface\AddOns` directory (e.g., `C:\Program Files\World of Warcraft\Interface\AddOns`).
-   - Move the file **skia.dll** into the game client's folder next to other .dlls.
      
 3. **Optional: Set Custom Game Path**:
    - Edit `gameExeLocation.txt` in the extracted folder, and set a value.
