@@ -14,8 +14,6 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
 - **Additional QoL Features**: Various enhancements to improve gameplay.
 
 ## Prerequisites
-Move the file **skia.dll** into the game client's folder next to other .dlls.
-
 - The base **World of Warcraft 3.3.5a** client installed, with `Wow.exe` accessible (the tool also supports `Project-Epoch.exe` or `Ascension.exe` if that's what your install uses — see **Custom Game Path** below).
 - **Addons** (required for full functionality):
   - **AwesomeEpochManager**: Enables custom CVar settings for modern features. (download below)
@@ -28,6 +26,7 @@ Move the file **skia.dll** into the game client's folder next to other .dlls.
 1. **Download the Latest Release**:
    - Download AwesomeEpoch.zip from [one of the release](https://github.com/thierbig/AwesomeEpoch/releases)
    - Extract the AwesomeEpoch folder to a location of your choice (e.g., `C:\Users\YourName\AwesomeEpoch`).
+   - Move the file **skia.dll** into the game client's folder next to other .dlls.
 
 2. **Install Required Addons**:
    - Download **AwesomeEpochManager** from [releases](https://github.com/thierbig/AwesomeEpoch/releases/download/2.0/Addons.zip)
