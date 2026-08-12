@@ -1,8 +1,6 @@
 # AwesomeEpoch
 <img width="999" height="698" alt="image" src="https://github.com/user-attachments/assets/a647942a-7773-45b8-bfc3-fa80ec2063c2" />
 
-**WARNING: USING THIS TOOL MIGHT RESULT IN A BAN**
-
 AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experience by launching the base **World of Warcraft 3.3.5a** client (`Wow.exe`) with the **AwesomeWotlkInjector**, enabling modern client features through custom CVar settings. This tool brings quality-of-life (QoL) improvements, such as the modern **Interaction Button** and the **Nameplates API**, allowing seamless integration with the **WeakAuras** addon for features like reactive spell anchoring (e.g., Overpower) and enemy castbars over nameplates. Users can customize the game executable path and perform manual injections if preferred. The injection method is safer from bans than the patched client method from vanilla awesome_wotlk.
 
 ## Features
@@ -36,7 +34,7 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
    - Place the addons in your game client's `Interface\AddOns` directory (e.g., `C:\Program Files\World of Warcraft\Interface\AddOns`).
    - 
 3. **Optional: Set Custom Game Path**:
-   - Edit `gameExeLocation.txt` in the extracted folder, remove the leading `#` and set a value.
+   - Edit `gameExeLocation.txt` in the extracted folder, and set a value.
    - Set it to the full path of your client executable, just its folder, or a bare filename (e.g., `E:\Games\epoch_live_bon`, `E:\Games\epoch_live_bon\Wow.exe`, or just `Wow.exe`).
    - Leave it commented (or delete the file) to use the default search order: `Wow.exe`, then `Project-Epoch.exe`, then `Ascension.exe`.
 
