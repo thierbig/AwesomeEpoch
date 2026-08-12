@@ -153,11 +153,9 @@ int main()
         MessageBoxA(nullptr, "AwesomeWotlkInjector.exe is missing from this folder.", "AwesomeEpoch", MB_ICONERROR | MB_OK);
         return 1;
     }
-    // Helpful warning: the injector needs the DLL (and skia.dll for MSDF fonts) beside it.
+    // Helpful warning: the injector loads AwesomeWotlkLib.dll from beside itself.
     if (!fs::is_regular_file(g_baseDir / "AwesomeWotlkLib.dll"))
         logLine("WARN", "AwesomeWotlkLib.dll is not in this folder - injection will fail until you add it.");
-    if (!fs::is_regular_file(g_baseDir / "skia.dll"))
-        logLine("WARN", "skia.dll is not in this folder - MSDF vector fonts (MSDFMode) need it beside the DLL.");
 
     const fs::path gameExe = resolveGameExe();
     if (gameExe.empty()) {
@@ -172,6 +170,11 @@ int main()
     const std::wstring exeName = gameExe.filename().wstring();
     const fs::path     gameDir = gameExe.parent_path();
     logLine("OK", "Using client: " + gameExe.string());
+
+    // skia.dll is a load-time import of AwesomeWotlkLib.dll, and the client resolves it from the
+    // game folder (the injected process's search path) - not from this launcher's folder.
+    if (!fs::is_regular_file(gameDir / "skia.dll"))
+        logLine("WARN", "skia.dll is not in the game folder (" + gameDir.string() + ") - copy it next to Wow.exe or injection will fail.");
 
     if (isProcessRunning(exeName)) {
         logLine("OK", "Client already running.");
@@ -202,8 +205,9 @@ int main()
 
     logLine("ERROR", "Injection failed after " + std::to_string(INJECT_ATTEMPTS) + " attempts. See injector_output.log.");
     MessageBoxA(nullptr,
-        "Injection failed. Make sure AwesomeWotlkLib.dll and skia.dll are in this folder,\n"
-        "run as Administrator, and that your client is the base 3.3.5a Wow.exe.",
+        "Injection failed. Make sure AwesomeWotlkLib.dll is in this folder and skia.dll is in\n"
+        "the game folder next to Wow.exe, run as Administrator, and that your client is the\n"
+        "base 3.3.5a Wow.exe.",
         "AwesomeEpoch", MB_ICONWARNING | MB_OK);
     return 1;
 }
