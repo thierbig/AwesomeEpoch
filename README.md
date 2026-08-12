@@ -10,7 +10,7 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
   - Display castbars over enemy nameplates for improved situational awareness.
 - **Custom Game Path**: Set a custom path, folder, or filename for the client executable (defaults to `Wow.exe`) via `gameExeLocation.txt`, even if it’s outside default locations (e.g., Program Files, C:\Games).
 - **Manual Injection Option**: Run the injector directly with a simple command for users who prefer manual control.
-- **MSDF Vector Fonts**: Crisp, vector-based (MSDF) text rendering ported from upstream `awesome_wotlk`, controlled by the `MSDFMode` CVar (`0` = off, `1` = on, `2` = on incl. unsafe fonts). Requires `skia.dll`, which ships in the release and loads alongside `AwesomeWotlkLib.dll` (keep both in the release folder).
+- **MSDF Vector Fonts**: Crisp, vector-based (MSDF) text rendering ported from upstream `awesome_wotlk`, controlled by the `MSDFMode` CVar (`0` = off, `1` = on, `2` = on incl. unsafe fonts). Requires `skia.dll`, which ships in the release but must be moved into your **game folder** (next to `Wow.exe`) — the client resolves it from there, not from the release folder.
 - **Additional QoL Features**: Various enhancements to improve gameplay.
 
 ## Prerequisites
@@ -82,7 +82,8 @@ To enable castbars over all enemy nameplates, you need to install [PlateCastBarF
   - Check `AutoInject_Awesome.log` in the release folder for what the launcher tried and where it failed.
 - **Injection fails**:
   - For manual injection, verify the game client is running before injecting.
-  - Make sure `AwesomeWotlkLib.dll` and `skia.dll` are in the same folder as `AwesomeEpoch.exe`.
+  - Make sure `AwesomeWotlkLib.dll` is in the same folder as `AwesomeEpoch.exe`.
+  - Make sure `skia.dll` is in your **game folder** (next to `Wow.exe`), not in the release folder — `AwesomeWotlkLib.dll` imports it, so injection fails without it there.
   - Ensure you have the required addons (`AwesomeEpochManager`, `Flash`, `WeakAuras`).
   
 
