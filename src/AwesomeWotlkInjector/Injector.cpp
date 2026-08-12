@@ -306,19 +306,10 @@ int wmain(int argc, wchar_t* argv[]) {
         return 1;
     }
 
-    // Monitor target process and exit when it closes
-    LOG_SUCCESS(L"Injection successful! Monitoring target process...");
-    LOG_INFO(L"The injector will close automatically when " + foundProcessName + L" exits.");
-    
-    HANDLE hMonitorProcess = OpenProcess(SYNCHRONIZE, FALSE, procId);
-    if (hMonitorProcess) {
-        // Wait for the process to terminate
-        WaitForSingleObject(hMonitorProcess, INFINITE);
-        CloseHandle(hMonitorProcess);
-        LOG_INFO(L"Target process has exited. Closing injector.");
-    } else {
-        LOG_ERROR(L"Could not monitor target process. Exiting automatically.");
-    }
-    
+    // Injection is done; the DLL now lives in the client. Exit immediately instead of
+    // babysitting the game - hanging around kept the launcher (which waits on us) alive for
+    // the whole session and delayed things when the player quit the game.
+    LOG_SUCCESS(L"Injection successful! Closing injector.");
+
     return 0;
 }
