@@ -416,9 +416,8 @@ static void OnRealAttach()
         // UnitAPI::initialize();
         // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: UnitAPI initialized");
         
-        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize Spell (disabled)");
-        // Spell::initialize();
-        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Spell initialized");
+        // Spell was initialized early in OnAttach so its CVar is queued before CVars_Initialize.
+        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Skipping Spell (already initialized in OnAttach)");
         
         // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize VoiceChat (disabled)");
         // VoiceChat::initialize();
@@ -500,6 +499,13 @@ static void OnAttach()
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing Misc (interaction + camera/showPlayer CVars)");
     Misc::initialize();
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Misc initialized");
+    // Spell: enableStancePatch CVar + GetSpellBaseCooldown. Must be queued here, not in
+    // OnRealAttach: registerCVar only queues, and CVars_Initialize_hk drains that queue during
+    // client startup, long before OnRealAttach fires. The cast detour itself is attached lazily
+    // by the CVar handler, so this stays a pure registration and touches nothing when off.
+    EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing Spell (enableStancePatch + GetSpellBaseCooldown)");
+    Spell::initialize();
+    EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Spell initialized");
     
     {
         LONG detErr = DetourTransactionCommit();
