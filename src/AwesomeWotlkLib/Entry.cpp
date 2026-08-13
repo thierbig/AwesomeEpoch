@@ -412,9 +412,8 @@ static void OnRealAttach()
         // NamePlates and Misc were initialized early in OnAttach to ensure CVars and handlers are queued before UI init
         EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Skipping NamePlates/Misc (already initialized in OnAttach)");
         
-        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: About to initialize UnitAPI (disabled)");
-        // UnitAPI::initialize();
-        // EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: UnitAPI initialized");
+        // UnitAPI was initialized early in OnAttach so its Lua lib is queued before FrameXML opens.
+        EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Skipping UnitAPI (already initialized in OnAttach)");
         
         // Spell was initialized early in OnAttach so its CVar is queued before CVars_Initialize.
         EVASION_LOG_SUCCESS("REAL_ATTACH", "OnRealAttach: Skipping Spell (already initialized in OnAttach)");
@@ -506,6 +505,12 @@ static void OnAttach()
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing Spell (enableStancePatch + GetSpellBaseCooldown)");
     Spell::initialize();
     EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Spell initialized");
+    // UnitAPI: UnitIsControlled/Disarmed/Silenced, UnitOccupations, UnitOwner, UnitTokenFromGUID.
+    // Pure Lua registration -- no detours, only ObjectMgr reads -- so it must be queued here to
+    // land before FrameXML opens, same as the other registerLuaLib modules.
+    EVASION_LOG_SUCCESS("ATTACH", "OnAttach: Initializing UnitAPI (unit flag/owner/token queries)");
+    UnitAPI::initialize();
+    EVASION_LOG_SUCCESS("ATTACH", "OnAttach: UnitAPI initialized");
     
     {
         LONG detErr = DetourTransactionCommit();

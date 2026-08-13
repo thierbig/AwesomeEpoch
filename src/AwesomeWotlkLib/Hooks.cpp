@@ -791,8 +791,14 @@ void Hooks::initialize()
     DetourAttach(&(LPVOID&)GetKeywordsByGuid_orig, GetKeywordsByGuid_hk);
     // DetourAttach(&(LPVOID&)LoadGlueXML_orig, LoadGlueXML_hk);
     // DetourAttach(&(LPVOID&)LoadCharacters_orig, LoadCharacters_hk);
-    // DetourAttach(&(LPVOID&)SecureCmdOptionParse_orig, SecureCmdOptionParse_hk);
-    // DetourAttach(&(LPVOID&)ProcessAoETargeting_orig, ProcessAoETargeting_hk);
+    // [@cursor] / [@playerlocation] macro targets. These two go together: the parse hook flags the
+    // keyword, the AoE hook consumes the flag and synthesises the terrain click, so enabling only
+    // one leaves the feature half-wired. Addresses verified against stock 3.3.5a 12340:
+    // SecureCmdOptionParse 0x00564AE0 and HandleTerrainClick 0x00527830 are __cdecl (plain ret),
+    // ProcessAoETargeting 0x004F66C0 is __stdcall (ret 4) with one dword arg -- all matching their
+    // declarations, and TerrainClickEvent.button lands at +0x14 where the client reads it.
+    DetourAttach(&(LPVOID&)SecureCmdOptionParse_orig, SecureCmdOptionParse_hk);
+    DetourAttach(&(LPVOID&)ProcessAoETargeting_orig, ProcessAoETargeting_hk);
     // DetourAttach(&(LPVOID&)IterateCollisionList_orig, IterateCollisionList_hk);
     // DetourAttach(&(LPVOID&)IterateWorldObjCollisionList_orig, IterateWorldObjCollisionList_hk);
     // DetourAttach(&(LPVOID&)IntersectCall_orig, IntersectCall_hk);
