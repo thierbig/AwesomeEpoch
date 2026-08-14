@@ -883,6 +883,14 @@ struct Player {
 // Base
 
 
+struct LockRec {
+    int m_id;
+    int m_type[8];
+    int m_index[8];
+    int m_skill[8];
+    int m_action[8];
+};
+
 class CGObject_C // sizeof(CGObject_C) == 0xD0
 {
 public:
@@ -972,6 +980,18 @@ public:
 
     TypeID GetTypeID() const { return m_typeID; }
 
+    // Object-highlight support. m_field18 is one opaque blob spanning 0x18..0xCF; these two fields
+    // live inside it at the offsets upstream names m_questMark (0x8C) and m_highlightMask (0xBC),
+    // so they are exposed as accessors rather than by re-cutting the struct.
+    void* GetQuestMark() const { return (void*)m_field18[(0x8C - 0x18) / 4]; }
+    uint32_t& HighlightMask() { return m_field18[(0xBC - 0x18) / 4]; }
+
+    const LockRec* GetLockRec() const
+    {
+        typedef const LockRec* (__thiscall* GetLockRec_t)(const CGObject_C*);
+        return ((GetLockRec_t)0x0070EF30)(this);
+    }
+
     float distance(CGObject_C* secObj)
     {
         if (!secObj)
@@ -1050,6 +1070,24 @@ public:
 
         return CanUseNowFn(this);
     }
+
+    bool CanUse() const
+    {
+        typedef bool(__thiscall* CanUse_t)(const CGGameObject_C* thisPtr);
+        static const CanUse_t CanUseFn = reinterpret_cast<CanUse_t>(0x0070BA00);
+
+        return CanUseFn(this);
+    }
+
+    // Passive highlight (the sparkle on chests, herb/ore nodes and questgivers). Both are
+    // __thiscall; CheckForPassiveHighlightFn is non-const because Detours rewrites it in place.
+    typedef char(__thiscall* CheckForPassiveHighlight_t)(CGObject_C*);
+    static inline CheckForPassiveHighlight_t CheckForPassiveHighlightFn =
+        reinterpret_cast<CheckForPassiveHighlight_t>(0x00711210);
+
+    typedef double(__thiscall* ShowLootEffect_t)(CGObject_C*);
+    static inline ShowLootEffect_t ShowLootEffectFn =
+        reinterpret_cast<ShowLootEffect_t>(0x0070D080);
 };
 
 inline HWND GetGameWindow() { return *(HWND*)0x00D41620; }
