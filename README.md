@@ -11,6 +11,7 @@ AwesomeEpoch is a utility designed to enhance the **World of Warcraft** experien
   - Anchor reactive spells like Overpower for better visibility.
   - Display castbars over enemy nameplates for improved situational awareness.
 - **Cursor-Targeted Macros**: `[@cursor]` and `[@playerlocation]` place ground-targeted spells without the second click — `/cast [@cursor] Blizzard`
+- **See-Through-Walls Camera**: Retail-style camera collision — when the camera would clip into a wall or doorframe, the obstruction fades to translucent instead of the camera snap-zooming onto your character. Enable with `/console cameraIndirectVisibility 1`; fade strength via `cameraIndirectAlpha` (0.6–1.0, default 0.6).
 - **Unit Info API**: New Lua queries for addons and WeakAuras — `UnitIsSilenced`, `UnitIsDisarmed`, `UnitIsControlled` (fleeing, confused, stunned or pacified), `UnitOccupations` (NPC flags — vendor, repair, flightmaster…), `UnitOwner` (a pet or totem's owner name and GUID), `UnitTokenFromGUID` (a GUID back to a unit token, nameplates included) and `GetSpellBaseCooldown` (cooldown and GCD in milliseconds).
 - **Custom Game Path**: Set a custom path, folder, or filename for the client executable (defaults to `Wow.exe`) via `gameExeLocation.txt`, even if it’s outside default locations (e.g., Program Files, C:\Games).
 - **Manual Injection Option**: Run the injector directly with a simple command for users who prefer manual control.
