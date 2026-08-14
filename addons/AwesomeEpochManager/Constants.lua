@@ -87,7 +87,6 @@ if HAS_DLL then
     CVARS[L.CATEGORY_INTERACTION] = {
         { name = "interactionMode", label = L.CVAR_LABEL_INTERACTION_MODE, type = "mode", modes = { {value = 0, label = L.MODE_LABEL_PLAYER_RADIUS}, {value = 1, label = L.MODE_LABEL_CONE_ANGLE} }, persist = true },
         { name = "interactionAngle", label = L.CVAR_LABEL_INTERACTION_ANGLE, type = "slider", min = 1, max = 360, step = 1, default = 90, persist = true },
-        { name = "objectHighlightMode", label = L.CVAR_LABEL_OBJ_HIGHLIGHT, desc = L.DESC_OBJ_HIGHLIGHT, type = "mode", modes = { {value = 0, label = L.MODE_LABEL_HL_DISABLED}, {value = 1, label = L.MODE_LABEL_HL_ALL}, {value = 2, label = L.MODE_LABEL_HL_TRACKED} }, default = 0, persist = true },
     }
 end
 

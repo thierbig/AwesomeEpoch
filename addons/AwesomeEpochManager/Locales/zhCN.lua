@@ -85,9 +85,4 @@ if GetLocale() == "zhCN" then
     L.MODE_LABEL_COLOR_PARSING = "颜色解析"
     L.MODE_LABEL_PLAYER_RADIUS = "玩家半径 20 码"
     L.MODE_LABEL_CONE_ANGLE = "20 码内锥形角度（度）"
-    L.MODE_LABEL_HL_DISABLED = "Disabled"
-    L.MODE_LABEL_HL_ALL = "All usable objects"
-    L.MODE_LABEL_HL_TRACKED = "Tracked only"
-    L.CVAR_LABEL_OBJ_HIGHLIGHT = "Object Highlighting"
-    L.DESC_OBJ_HIGHLIGHT = "Forces glowing sparkles on chests, gathering nodes and questgivers."
 end

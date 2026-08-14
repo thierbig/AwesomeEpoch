@@ -85,9 +85,4 @@ if GetLocale() == "esMX" then
     L.MODE_LABEL_COLOR_PARSING = "Análisis de color"
     L.MODE_LABEL_PLAYER_RADIUS = "Radio del jugador 20yd"
     L.MODE_LABEL_CONE_ANGLE = "Ángulo de cono (grados) dentro de 20yd"
-    L.MODE_LABEL_HL_DISABLED = "Disabled"
-    L.MODE_LABEL_HL_ALL = "All usable objects"
-    L.MODE_LABEL_HL_TRACKED = "Tracked only"
-    L.CVAR_LABEL_OBJ_HIGHLIGHT = "Object Highlighting"
-    L.DESC_OBJ_HIGHLIGHT = "Forces glowing sparkles on chests, gathering nodes and questgivers."
 end

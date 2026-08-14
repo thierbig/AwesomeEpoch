@@ -85,9 +85,4 @@ if GetLocale() == "koKR" then
     L.MODE_LABEL_COLOR_PARSING = "색상 분석"
     L.MODE_LABEL_PLAYER_RADIUS = "플레이어 반경 20미터"
     L.MODE_LABEL_CONE_ANGLE = "20미터 내 원뿔 각도 (도)"
-    L.MODE_LABEL_HL_DISABLED = "Disabled"
-    L.MODE_LABEL_HL_ALL = "All usable objects"
-    L.MODE_LABEL_HL_TRACKED = "Tracked only"
-    L.CVAR_LABEL_OBJ_HIGHLIGHT = "Object Highlighting"
-    L.DESC_OBJ_HIGHLIGHT = "Forces glowing sparkles on chests, gathering nodes and questgivers."
 end

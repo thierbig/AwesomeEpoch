@@ -85,9 +85,4 @@ if GetLocale() == "frFR" then
     L.MODE_LABEL_COLOR_PARSING = "Analyse de couleur"
     L.MODE_LABEL_PLAYER_RADIUS = "Rayon du joueur 20m"
     L.MODE_LABEL_CONE_ANGLE = "Angle du cône (dg) à moins de 20m"
-    L.MODE_LABEL_HL_DISABLED = "Disabled"
-    L.MODE_LABEL_HL_ALL = "All usable objects"
-    L.MODE_LABEL_HL_TRACKED = "Tracked only"
-    L.CVAR_LABEL_OBJ_HIGHLIGHT = "Object Highlighting"
-    L.DESC_OBJ_HIGHLIGHT = "Forces glowing sparkles on chests, gathering nodes and questgivers."
 end

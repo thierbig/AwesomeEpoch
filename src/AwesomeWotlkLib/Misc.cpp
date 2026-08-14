@@ -24,23 +24,6 @@ static char s_customCombatLogPath[MAX_PATH];
 static Console::CVar* s_cvar_chatLogSessionKey;
 static Console::CVar* s_cvar_combatLogSessionKey;
 
-// --- Object highlighting (ported from upstream awesome_wotlk) ---------------------------------
-// Forces the passive sparkle on chests, gathering nodes and questgivers. The client's
-// CheckForPassiveHighlight (0x00711210) gates the effect on bit 0x08 of the cached state block at
-// *(obj+0xD0)+0x20 -- verified in the binary as `mov eax,[esi+0xD0]; mov cl,[eax+0x20];
-// shr cl,3; test cl,1` -- so on servers that leave the bit clear nothing sparkles. Rather than
-// spoof that bit we let the original run, then drive ShowLootEffect (0x0070D080) ourselves for
-// object types worth highlighting.
-enum EObjHLMode : uint32_t {
-    HL_DISABLED = 0, // stock behaviour
-    HL_ENABLED = 1, // highlight every usable chest / goober / questgiver
-    HL_TRACKED = 2, // only tracked ones: quest-marked questgivers, non-gathering chests
-};
-
-static EObjHLMode s_highlightMode = HL_DISABLED;
-static bool s_highlightAttached = false;
-static Console::CVar* s_cvar_objectHighlightMode;
-
 static const char* logSessionStamp()
 {
     static const std::string stamp = [] {
@@ -444,79 +427,8 @@ static void OnLeaveWorld()
     triggered = false;
 }
 
-// __fastcall with a single pointer parameter is the standard stand-in for __thiscall: `this`
-// arrives in ECX either way.
-static char __fastcall CGGameObject_C__CheckForPassiveHighlightHk(CGGameObject_C* pThis)
-{
-    const char result = CGGameObject_C::CheckForPassiveHighlightFn(pThis);
-    if (!pThis)
-        return result;
-
-    const uint8_t goType = (uint8_t)((pThis->GetValue<uint32_t>(GAMEOBJECT_BYTES_1) >> 8) & 0xFF);
-    if (!pThis->CanUse() || (goType != GAMEOBJECT_TYPE_CHEST && goType != GAMEOBJECT_TYPE_GOOBER
-                             && goType != GAMEOBJECT_TYPE_QUESTGIVER))
-        return result;
-
-    if (s_highlightMode == HL_TRACKED) {
-        if (goType == GAMEOBJECT_TYPE_QUESTGIVER && pThis->GetQuestMark() == nullptr)
-            return result;
-        if (goType == GAMEOBJECT_TYPE_CHEST) {
-            if (const LockRec* lockRec = pThis->GetLockRec()) {
-                if (lockRec->m_type[0] == 2)
-                    return result; // gathering node -- left to the stock rules in tracked mode
-            }
-        }
-    }
-
-    pThis->HighlightMask() |= 0x400000u;
-    return (char)CGGameObject_C::ShowLootEffectFn(pThis);
-}
-
-static int CVarHandler_objectHighlightMode(Console::CVar*, const char*, const char* value, LPVOID)
-{
-    int v = std::atoi(value);
-    if (v < HL_DISABLED || v > HL_TRACKED)
-        v = HL_DISABLED;
-    s_highlightMode = (EObjHLMode)v;
-
-    // Attach only while the feature is on, so `objectHighlightMode 0` leaves the client untouched.
-    const bool wanted = (s_highlightMode != HL_DISABLED);
-    if (wanted != s_highlightAttached) {
-        DetourTransactionBegin();
-        DetourUpdateThread(GetCurrentThread());
-        if (wanted)
-            DetourAttach(&(LPVOID&)CGGameObject_C::CheckForPassiveHighlightFn, CGGameObject_C__CheckForPassiveHighlightHk);
-        else
-            DetourDetach(&(LPVOID&)CGGameObject_C::CheckForPassiveHighlightFn, CGGameObject_C__CheckForPassiveHighlightHk);
-
-        if (DetourTransactionCommit() == NO_ERROR)
-            s_highlightAttached = wanted;
-    }
-
-    // Re-run the highlight check on everything already in view, so toggling takes effect now
-    // instead of when objects next stream in.
-    if (ObjectMgr::GetCGUnitPlayer()) {
-        ObjectMgr::EnumObjects([](guid_t guid) -> bool {
-            if (guid < 0x1000)
-                return true;
-            CGGameObject_C* obj = (CGGameObject_C*)ObjectMgr::Get(guid, TYPEMASK_GAMEOBJECT);
-            if (!obj || obj->GetTypeID() != TYPEID_GAMEOBJECT)
-                return true;
-
-            if (s_highlightAttached)
-                CGGameObject_C__CheckForPassiveHighlightHk(obj);
-            else
-                CGGameObject_C::CheckForPassiveHighlightFn(obj);
-            return true;
-        });
-    }
-
-    return 1;
-}
-
 void Misc::initialize()
 {
-    Hooks::FrameXML::registerCVar(&s_cvar_objectHighlightMode, "objectHighlightMode", NULL, (Console::CVarFlags)1, "0", CVarHandler_objectHighlightMode);
     Hooks::FrameXML::registerCVar(&s_cvar_showPlayer, "showPlayer", NULL, (Console::CVarFlags)1, "1", CVarHandler_showPlayer);
     Hooks::FrameXML::registerCVar(&s_cvar_cameraFov, "cameraFov", NULL, (Console::CVarFlags)1, "100", CVarHandler_cameraFov);
     Hooks::FrameXML::registerCVar(&s_cvar_interactionAngle, "interactionAngle", NULL, (Console::CVarFlags)1, "60", CVarHandler_interactionAngle);
