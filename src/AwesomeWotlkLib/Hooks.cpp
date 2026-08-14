@@ -778,8 +778,11 @@ void Hooks::initialize()
 {
     EVASION_LOG_SUCCESS("HOOKS", "Hooks::initialize: starting detour attachments");
     // NOTE: Keep only hooks relevant to NamePlate API. Comment out unrelated memory writes/hook attachments.
-    // Hooks::FrameXML::registerCVar(&s_cvar_cameraIndirectAlpha, "cameraIndirectAlpha", NULL, (Console::CVarFlags)1, "0.6", CVarHandler_cameraIndirectAlpha);
-    // Hooks::FrameXML::registerCVar(&s_cvar_cameraIndirectVisibility, "cameraIndirectVisibility", NULL, (Console::CVarFlags)1, "0", CVarHandler_cameraIndirectVisibility);
+    // Camera indirect visibility (retail-style): when the camera would clip into geometry, fade
+    // the obstructing model to cameraIndirectAlpha instead of snap-zooming the camera in. Off by
+    // default; CGWorldFrame_Intersect_new falls back to stock behaviour while the CVar is 0.
+    Hooks::FrameXML::registerCVar(&s_cvar_cameraIndirectAlpha, "cameraIndirectAlpha", NULL, (Console::CVarFlags)1, "0.6", CVarHandler_cameraIndirectAlpha);
+    Hooks::FrameXML::registerCVar(&s_cvar_cameraIndirectVisibility, "cameraIndirectVisibility", NULL, (Console::CVarFlags)1, "0", CVarHandler_cameraIndirectVisibility);
     // DetourAttach(&(LPVOID&)InvalidFunctionPointerCheck_orig, InvalidFunctionPointerCheck_hk);
     DetourAttach(&(LPVOID&)CVars_Initialize_orig, CVars_Initialize_hk);
     DetourAttach(&(LPVOID&)FrameScript_FireOnUpdate_orig, FrameScript_FireOnUpdate_hk);
@@ -799,10 +802,21 @@ void Hooks::initialize()
     // declarations, and TerrainClickEvent.button lands at +0x14 where the client reads it.
     DetourAttach(&(LPVOID&)SecureCmdOptionParse_orig, SecureCmdOptionParse_hk);
     DetourAttach(&(LPVOID&)ProcessAoETargeting_orig, ProcessAoETargeting_hk);
-    // DetourAttach(&(LPVOID&)IterateCollisionList_orig, IterateCollisionList_hk);
-    // DetourAttach(&(LPVOID&)IterateWorldObjCollisionList_orig, IterateWorldObjCollisionList_hk);
-    // DetourAttach(&(LPVOID&)IntersectCall_orig, IntersectCall_hk);
-    // DetourAttach(&(LPVOID&)SpellCastReset_orig, SpellCastReset_hk);
+    // Camera indirect visibility: three mid-function naked hooks. Sites verified byte-exact
+    // against the stock 3.3.5a 12340 client: 0x006060E6 holds the exact 29-byte push/call
+    // sequence the IntersectCall hook re-creates (call target 0x0077F310 = Intersect_orig),
+    // jmpback 0x00606103 is its `add esp,0x18`; 0x007A279D / 0x007A2A1C hold the stolen
+    // mov/cmp bytes with skip targets on valid instruction boundaries that mirror each site's
+    // own jne target. Hooks always run; behaviour is gated on cameraIndirectVisibility inside
+    // CGWorldFrame_Intersect_new.
+    DetourAttach(&(LPVOID&)IterateCollisionList_orig, IterateCollisionList_hk);
+    DetourAttach(&(LPVOID&)IterateWorldObjCollisionList_orig, IterateWorldObjCollisionList_hk);
+    DetourAttach(&(LPVOID&)IntersectCall_orig, IntersectCall_hk);
+    // SpellCastReset: clears the [@cursor]/[@playerlocation] keyword flags when a cast is
+    // cancelled or reset (site 0x007FEE99 = `call 0x7FCC30`, re-created in the hook). Without
+    // this, a failed [@cursor] cast leaves the flag armed and the NEXT ground-target cast
+    // mis-fires at the old position -- completes the cursor feature enabled earlier.
+    DetourAttach(&(LPVOID&)SpellCastReset_orig, SpellCastReset_hk);
     // DetourAttach(&(LPVOID&)CGame_Destroy_orig, CGame_Destroy_hk);
     EVASION_LOG_SUCCESS("HOOKS", "Hooks::initialize: detour attachments queued");
 }
